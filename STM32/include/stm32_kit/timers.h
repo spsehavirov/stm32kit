@@ -1,6 +1,6 @@
 /**
-  ********************************************************************************************************************************************
-  * @file     STM32_config_kit_TIMx.h
+  **************************************************************************
+  * @file     timers.h
   * @author   SPSE Havirov
   * @version  1.2
   * @date     13-June-2022 [v1.0]
@@ -24,36 +24,18 @@
   *                                               TIM6, TIM7
   *
   *
-  ********************************************************************************************************************************************
+  **************************************************************************
   * @attention
   *
   *   Otestovano na: F407; G071
   *
   *   Netestovano: F401, F411, L152
   *
-  ********************************************************************************************************************************************
-  * @history
-  *
-  *   v1.2  [30-June-2022]
-  *         - Vytvoreni maker pro nastaveni PSC, ARR a CNT registru u casovace
-  *         - Prepsani funkce pro konfigurace casovace (odebrani vstupnich parametru) pro vyuziti vytvorenych maker
-  *         - Otestovano pro pripravek G071
-  *         - Uprava dilcich komentaru, sjednoceni zapisu
-  *
-  *   v1.1  [28-June-2022]
-  *         - Uprava hl. komentare v casti kodu pro pripravek
-  *         - Rozdeleni na tri funkce a jejich zobecneni - nyni neni nutno zasahovat do funkci, veskere nastaveni probehne pres vstupni
-  *             parametry
-  *
-  *   v1.0  [13-June-2022]
-  *         - Pouze pro pripravek F407
-  *         - 1. verze driveru pro obecne pouziti zakladnich casovacu, jez jsou urceny pro uzivatele
-  *
-  ********************************************************************************************************************************************
-*/
+  **************************************************************************
+  */
 #include "platform.h"
 
-//#============================================================================================================================================
+//#=========================================================================
 //#=== Makra pro casovace - ZACATEK
 #ifndef TIMx_PSC                              // Kontrola a pripadne vytvoreni makra pro nastaveni Prescaler (delicky).
 # define TIMx_PSC 0
@@ -67,7 +49,7 @@
 # define TIMx_CNT 0
 #endif
 //#=== Makra pro casovace - KONEC
-//#============================================================================================================================================
+//#=========================================================================
 
 #if (STM32_TYPE == 71)
 # define TIM6_APB APBRSTR1

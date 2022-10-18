@@ -1,17 +1,17 @@
 /**
- ********************************************************************************************************************************************
+ ***************************************************************************
  * @file     chrono.h
  * @author   SPSE Havirov
  * @version  1.1.1
  * @date     10-April-2022
  * @brief    Definice a funkce pro praci s casem
  *
- ********************************************************************************************************************************************
+ ***************************************************************************
  * @attention
  *
  * Otestovano na: F407; F401, G071
  * Netestovano: F411, L152
- * 
+ *
  *   SysTick konfigurace:
  *       Do vlastniho projektu vlozit nasledujici 2 radky:
  *         SystemCoreClockUpdate();                                // Do SystemCoreClock se nahraje frekvence jadra
@@ -30,7 +30,7 @@
  *
  *       SysTick_Config(SystemCoreClock / 10);     // Konfigurace SysTick timeru na periodu 0.1s (100ms)
  *         delay_ms(1);                            // 1s     (1000ms)
- *         delay_ms(10);                           // 10s 
+ *         delay_ms(10);                           // 10s
  *         delay_us(1);                            // 0.1s   (100ms)
  *         delay_us(10);                           // 1s     (1000ms)
  *
@@ -52,13 +52,7 @@
  *         delay_us(1);                            // 0.1ms  (100us)
  *         delay_us(10);                           // 1ms    (1000us)
  *
- ********************************************************************************************************************************************
- * @history
- *
- *   v0.1  [02-July-2022]
- *         - Vycleneni funkci pro praci s casem do solo knihovny (pro budouci podporu RTX)
- *
- ********************************************************************************************************************************************
+ ***************************************************************************
  */
 #ifndef STM32_KIT_CHRONO
 #define STM32_KIT_CHRONO
@@ -69,10 +63,12 @@
 extern "C" {
 #endif
 
-static volatile uint32_t Ticks; // Vyuzito pro SysTick k nacitani Ticku pri podteceni.
 
-//#============================================================================================================================================
+//#=========================================================================
 //#=== Casove funkce - ZACATEK
+
+#if !defined(RTE_CMSIS_RTOS2) && !defined(__RL_ARM_VER)
+static volatile uint32_t Ticks; // Vyuzito pro SysTick k nacitani Ticku pri podteceni.
 
 /**
  * @brief  Rutina pro obsluhu preruseni SysTick.
@@ -104,7 +100,7 @@ INLINE_STM32 void delay_ms(uint32_t ms) {
   uint32_t start = Ticks;
 
   // Defaultni nastaveni podteceni SysTick Timeru
-  // je 0.1ms -> SysTick_Config(SystemCoreClock / 10000) 
+  // je 0.1ms -> SysTick_Config(SystemCoreClock / 10000)
   // <- pro spravny prepocet na ms nutno nasobit 10
   ms *= 10;
 
@@ -125,8 +121,46 @@ INLINE_STM32 void delay_us(uint32_t us) {
     /* cekani na ubehnuti casu */
   }
 }
+#elif defined(__RL_ARM_VER)
+INLINE_STM32 void delay(uint16_t value) {
+    os_dly_wait((uint32_t)value);
+}
+
+INLINE_STM32 void delay_us(uint32_t us) {
+    os_dly_wait(us);
+}
+
+INLINE_STM32 void delay_ms(uint32_t ms) {
+    delay_us(10U * ms);
+}
+#else
+#   ifndef CMSIS_OS2_H_
+#       include "cmsis_os2.h"
+#   endif
+
+/** Jednoduchá abstrakce pro RTOS2
+ *
+ */
+INLINE_STM32 void delay(uint16_t value) {
+    osDelay((uint32_t)value);
+}
+
+CONSTEXPR INLINE_STM32 uint32_t delay_kernel_freq(void) {
+    return osKernelGetTickFreq() / 100000U + 1;
+}
+
+INLINE_STM32 void delay_us(uint32_t us) {
+    const uint32_t normalized_ticks_for_us = us * delay_kernel_freq();
+    uint32_t wait_until = osKernelGetTickCount() + normalized_ticks_for_us;
+    osDelayUntil(wait_until);
+}
+
+INLINE_STM32 void delay_ms(uint32_t ms) {
+    delay_us(10U * ms);
+}
+#endif
 //#=== Casove funkce - KONEC
-//#============================================================================================================================================
+//#=========================================================================
 
 #ifdef __cplusplus
 }

@@ -10,15 +10,6 @@
  * @date 2022-06-30
  *
  * @copyright Copyright SPSE Havirov (c) 2022
- ***********************************************************************************************************************
- * @history
- *
- *   v1.5.8  [30-June-2022]
- *         - Vytvoreni solo hlavickoveho souboru pro praci s I/O
- *         - pridani auto-detekce compiler-u pro vetsi granularitu nastaveni
- *         - umozneni pouzivani pinoutu pomoci `enum pin`
- *
- ***********************************************************************************************************************
  */
 #ifndef STM32_KIT_PLATFORM
 #define STM32_KIT_PLATFORM

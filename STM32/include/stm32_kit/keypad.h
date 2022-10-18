@@ -1,8 +1,8 @@
 /**
- ********************************************************************************************************************************************
+ ************************************************************************
  * @file     keypad.h
  * @author   SPSE Havirov
- * @version  1.1.1
+ * @version  1.5.8
  * @date     10-April-2022 [v1.0]
  * @brief    Driver pro ovladani LCD v primem pripojeni (4bit komunikace).
  *
@@ -55,31 +55,14 @@
  *                                               ROW2    PB4
  *                                               ROW3    PB5
  *
- ********************************************************************************************************************************************
+ ************************************************************************
  * @attention
  *
  * Otestovano na: F407; F401, G071
  *
  * Netestovano: F411, L152
  *
- ********************************************************************************************************************************************
- * @history
- *
- *   v1.1  [28-June-2022]
- *         - Uprava hl. komentare v casti kodu pro pripravek
- *         - Uprava a pridani komentaru k funkcim a jejim dilcim krokum
- *         - Uprava funkce KeyPad_getKey(), odstraneni nepouzivane promenne key (nahrazeni pevnou hodnotou pro return)
- *         - Otestovano pro pripravek G071
- *         - Uprava dilcich komentaru, sjednoceni zapisu
- *
- *   v1.0  [10-April-2022]
- *         - Pro pripravek G071 zmena portu a pinu pro sloupce, vyuziti volnych pinu (ty jez jsou urceny jen jako I/O)
- *         - Pro pripravek F401 zmena portu a pinu pro radky a sloupce (zabrani pinu pro SPI_1 a I2C_3)
- *
- *   v0.9  [12-March-2022]
- *         - 1. verze driveru pro sirsi pouziti
- *
- ********************************************************************************************************************************************
+ ************************************************************************
  */
 #ifndef STM32_KIT_KEYPAD
 #define STM32_KIT_KEYPAD

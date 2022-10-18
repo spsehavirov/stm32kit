@@ -1,8 +1,8 @@
 /**
-  ********************************************************************************************************************************************
+  **********************************************************************
   * @file     stm32_kit.h
   * @author   SPSE Havirov
-  * @version  1.1.3
+  * @version  1.5.8
   * @date     10-April-2022
   * @brief    Obecny konfiguracni soubor pro pouzivane pripravky.
   *
@@ -66,7 +66,7 @@
   *                                                       PD3     Blue
   *
   *
-  ********************************************************************************************************************************************
+  **********************************************************************
   * @attention
   *
   *   Otestovano na: F407; F401, G071
@@ -81,30 +81,8 @@
   *   Externi LED:
   *       Dodatecne LED pripojene jak ke skolnimu, tak domacimu pripravku, viz specifikace vyse.
   *
-  *
-  ********************************************************************************************************************************************
-  * @history
-  *
-  *   v1.1.3  [30-June-2022]
-  *         - Uprava definu pro praci s *_platform.h a vyuzivani jejich maker
-  *         - zjednoduseni definice pinoutu
-  *
-  *   v1.1  [28-June-2022]
-  *         - Uprava hl. komentare v casti kodu pro pripravky
-  *         - Zmena vyberu desky a linkovani device header pro pouzity pripravek
-  *         - Uprava dilcich komentaru, sjednoceni zapisu
-  *
-  *   v1.0  [10-April-2022]
-  *         - Pro pripravek G071 zmena portu a pinu pro vestavene LED a zmena pinu pro externi LED (odseparovani od F401, F411 a L152 v ramci
-  *             pouzitych maker), vyuziti volnych pinu (ty jez jsou urceny jen jako I/O)
-  *         - Drobne upravy komentaru
-  *
-  *   v0.9  [27-February-2022]
-  *         - 1. verze driveru pro sirsi pouziti
-  *         - Otestovano pro pripravek F407 a F401
-  *
-  ********************************************************************************************************************************************
-*/
+  **********************************************************************
+  */
 #ifndef STM32_KIT
 #define STM32_KIT
 

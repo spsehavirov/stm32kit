@@ -5,20 +5,20 @@
 
   <Header>### uVision Project, (C) Keil Software</Header>
 
-  <WorkspaceName>WorkSpace</WorkspaceName>
+  <WorkspaceName>SPSE ARM Kit</WorkspaceName>
 
   <project>
-    <PathAndName>.\STM32_F407VGTx\STM32_F407VGTx.uvprojx</PathAndName>
+    <PathAndName>.\STM32\arch\STM32_F407VGTx\STM32_F407VGTx.uvprojx</PathAndName>
     <NodeIsActive>1</NodeIsActive>
     <NodeIsExpanded>1</NodeIsExpanded>
   </project>
 
   <project>
-    <PathAndName>.\STM32_F401RETx\STM32_F401RETx.uvprojx</PathAndName>
+    <PathAndName>.\STM32\arch\STM32_F401RETx\STM32_F401RETx.uvprojx</PathAndName>
   </project>
 
   <project>
-    <PathAndName>.\STM32_G071RBTx\STM32_G071RBTx.uvprojx</PathAndName>
+    <PathAndName>.\STM32\arch\STM32_G071RBTx\STM32_G071RBTx.uvprojx</PathAndName>
   </project>
 
 </ProjectWorkspace>
