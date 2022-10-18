@@ -1,0 +1,29 @@
+[
+  {
+    "title": "Základní I/O",
+    "description": "Zjednodušení a obsluha základních operací na GPIO pinech.",
+    "image": {
+      "url": "images/features/led.svg",
+      "width": 120,
+      "height": 120
+    }
+  },
+  {
+    "title": "STM32 podpora",
+    "description": "Postupně se rozšířující podpora pro různé procesory rodiny STM32.",
+    "image": {
+      "url": "images/features/raspberry-pi.svg",
+      "width": 80,
+      "height": 80
+    }
+  },
+  {
+    "title": "Komunikace",
+    "description": "Komunikace s okolím pomocí UART, SPI a I2C rozharní.",
+    "image": {
+      "url": "images/features/serial-port.svg",
+      "width": 80,
+      "height": 80
+    }
+  }
+]
