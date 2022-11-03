@@ -33,12 +33,12 @@
 
 #ifndef CUSTOM_ADC
 # if ((STM32_TYPE == 71) || (STM32_TYPE == 152) || (STM32_TYPE == 401) || (STM32_TYPE == 411))
-#   define ADC      (PA1)  // ADC on F401, F411, G071, L152
+#   define ADC_1    (PA1)  // ADC on F401, F411, G071, L152
 # else
-#   define ADC      (PA1)  // ADC on F407
+#   define ADC_1    (PA1)  // ADC on F407
 # endif
-# define ADC_PIN    io_pin(ADC)
-# define ADC_PORT   io_port(ADC)
+# define ADC_1_PIN    io_pin(ADC_1)
+# define ADC_1_PORT   io_port(ADC_1)
 #endif
 
 #ifdef __cplusplus
@@ -56,9 +56,9 @@ extern "C" {
  */
 void ADC_setup(void) {
   __disable_irq();
-  GPIO_clock_enable(ADC);
+  GPIO_clock_enable(ADC_1);
   RCC->APB2ENR |= 0x00000100; // Enable ADC clock
-  MODIFY_REG(ADC_PORT->MODER, 3UL << (2 * ADC_PIN), 3UL << (2 * ADC_PIN)); // Analog mode
+  MODIFY_REG(ADC_1_PORT->MODER, 3UL << (2 * ADC_1_PIN), 3UL << (2 * ADC_1_PIN)); // Analog mode
   
   MODIFY_REG(ADC1->SMPR2, 7UL << (3 * 1), 7UL << (3 * 1)); // Set sampling to 111 - 480 cycles
   ADC1->CR2  = 0;
