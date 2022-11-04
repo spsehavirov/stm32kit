@@ -17,7 +17,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-  
+
 #ifndef CUSTOM_USER_BTN
 # if ((STM32_TYPE == 71) || (STM32_TYPE == 152) || (STM32_TYPE == 401) || (STM32_TYPE == 411))
 #   error "Not supported yet!"
@@ -32,84 +32,83 @@ extern "C" {
 #endif
 
 INLINE_STM32 void UART_TX_Setup(enum pin pin) {
-  GPIO_clock_enable(pin);
+    GPIO_clock_enable(pin);
 
-  MODIFY_REG(io_port(pin)->MODER,   (3UL << (2 * io_pin(pin))), (2UL << 2 * io_pin(pin)));   // AF mode
-   CLEAR_BIT(io_port(pin)->OTYPER,  (1UL << (1 * io_pin(pin))));                             // Push-pull
-  MODIFY_REG(io_port(pin)->OSPEEDR, (3UL << (2 * io_pin(pin))), (3UL << 2 * io_pin(pin)));   // Very high speed
-
-	MODIFY_REG(io_port(pin)->AFR[0], (15UL << (4 * io_pin(pin))), (7UL << 4 * io_pin(pin)));   // AF7 - UART
+    MODIFY_REG(io_port(pin)->MODER,   (3UL  << (2 * io_pin(pin))),  (2UL << 2 * io_pin(pin)));  // AF mode
+     CLEAR_BIT(io_port(pin)->OTYPER,  (1UL  << (1 * io_pin(pin))));                             // Push-pull
+    MODIFY_REG(io_port(pin)->OSPEEDR, (3UL  << (2 * io_pin(pin))),  (3UL << 2 * io_pin(pin)));  // Very high speed
+    MODIFY_REG(io_port(pin)->AFR[0],  (15UL << (4 * io_pin(pin))),  (7UL << 4 * io_pin(pin)));  // AF7 - UART
 }
 
 INLINE_STM32 void UART_RX_Setup(enum pin pin) {
-  GPIO_clock_enable(pin);
-	
-  MODIFY_REG(io_port(pin)->MODER,   (3UL << (2 * io_pin(pin))), (2UL << 2 * io_pin(pin)));   // AF mode
-	MODIFY_REG(io_port(pin)->AFR[0], (15UL << (4 * io_pin(pin))), (7UL << 4 * io_pin(pin)));   // AF7 - UART
+    GPIO_clock_enable(pin);
+    
+    MODIFY_REG(io_port(pin)->MODER,   (3UL << (2 * io_pin(pin))), (2UL << 2 * io_pin(pin)));   // AF mode
+    MODIFY_REG(io_port(pin)->AFR[0], (15UL << (4 * io_pin(pin))), (7UL << 4 * io_pin(pin)));   // AF7 - UART
 }
 
 INLINE_STM32 uint32_t UART_baudrate_calculate(int f_clk, int desired_rate, int over8) {
-	const uint32_t usart_div = (((over8) ? 2 : 1)*f_clk) / desired_rate;
-	
-	uint32_t reg = 0;
-	if (over8) {
-		reg |= (usart_div & USART_BRR_DIV_Mantissa) | ((usart_div & USART_BRR_DIV_Fraction) >> 1);
-	} else {
-		reg |= usart_div;
-	}
-	
-	return  reg;
+    const uint32_t usart_div = (((over8) ? 2 : 1) * f_clk) / desired_rate;
+
+    uint32_t reg = 0;
+    if (over8) {
+        reg |= (usart_div & USART_BRR_DIV_Mantissa) | ((usart_div & USART_BRR_DIV_Fraction) >> 1);
+    } else {
+        reg |= usart_div;
+    }
+
+    return  reg;
 }
 
 INLINE_STM32 void UART_setup(void) {
-	UART_TX_Setup(UART_TX);
-	UART_RX_Setup(UART_RX);
-	
-	RCC->APB1ENR |= RCC_APB1ENR_USART2EN;
-	USART2->BRR |= UART_baudrate_calculate(SystemCoreClock, 9600, 0);
-	
-	USART2->CR1 |= USART_CR1_TE | USART_CR1_RE; // Enable Tx & Rx
-	USART2->CR1 |= USART_CR1_UE; // USART Enable
+    UART_TX_Setup(UART_TX);
+    UART_RX_Setup(UART_RX);
+
+    RCC->APB1ENR |= RCC_APB1ENR_USART2EN;
+
+    USART2->BRR |= UART_baudrate_calculate(SystemCoreClock, 9600, 0);
+    USART2->CR1 |= USART_CR1_TE | USART_CR1_RE; // Enable Tx & Rx
+    USART2->CR1 |= USART_CR1_UE; // USART Enable
 }
 
 
 INLINE_STM32 void UART_putc(uint8_t znak) {
-	USART2->DR = znak;
-	while (!(USART2->SR & USART_SR_TXE)) {
-		// Wait for transmision to complete
-	}		
+    USART2->DR = znak;
+    while (!(USART2->SR & USART_SR_TXE)) {
+        // Wait for transmision to complete
+    }		
 }
 
 INLINE_STM32 uint8_t UART_getc(void) {
-	while (!(USART2->SR & USART_SR_RXNE)) {
-		// Wait for transmision to complete
-	}	
-  return USART2->DR;	
+    while (!(USART2->SR & USART_SR_RXNE)) {
+        // Wait for transmision to complete
+    }	
+    return USART2->DR;	
 }
 
 INLINE_STM32 size_t UART_write(void *__restrict buf, size_t len) {
-  uint8_t *str = (uint8_t *)buf;
-  int count = 0;
-	for(int i = len; i; --i) {
-		UART_putc(*str);
-		str++;
-    count++;
-	}
-	return count;
+    uint8_t *str = (uint8_t *)buf;
+    int count = 0;
+    for (int i = len; i; --i) {
+        UART_putc(*str);
+        str++;
+        count++;
+    }
+    return count;
 }
   
-INLINE_STM32 int UART_read(void *buf, size_t len) {
-  uint8_t *str = (uint8_t *)buf;
-  int alen = 0;
-  uint8_t chr;
-  for (int i = len; i; i--) {
-    chr = UART_getc();
-    *str = chr;
-    if (*str == '\0') break;
-    str++;
-    alen++;
-  }
-  return alen;
+INLINE_STM32 int UART_read(void *__restrict buf, size_t len) {
+    uint8_t *str = (uint8_t *)buf;
+    int alen = 0;
+    uint8_t chr;
+    for (int i = len; i; i--) {
+        chr = UART_getc();
+        *str = chr;
+        if (*str == '\0') break;
+        str++;
+        alen++;
+    }
+    return alen;
 }
   
 #ifdef __cplusplus
