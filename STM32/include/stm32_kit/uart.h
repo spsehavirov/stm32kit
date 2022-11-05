@@ -48,16 +48,11 @@ INLINE_STM32 void UART_RX_Setup(enum pin pin) {
 }
 
 INLINE_STM32 uint32_t UART_baudrate_calculate(int f_clk, int desired_rate, int over8) {
-    const uint32_t usart_div = (((over8) ? 2 : 1) * f_clk) / desired_rate;
-
-    uint32_t reg = 0;
-    if (over8) {
-        reg |= (usart_div & USART_BRR_DIV_Mantissa) | ((usart_div & USART_BRR_DIV_Fraction) >> 1);
-    } else {
-        reg |= usart_div;
-    }
-
-    return  reg;
+    const uint32_t div_sampling = (pclk * 25) / ((2 + 2 * (!!!over8)) * desired_rate);
+    const uint32_t mantissa = div_sampling / 100;
+    const uint32_t fraction = ((div_sampling - mantissa * 100) * 16 + 50) / 100;
+    
+    return (mantissa << 4) | (fraction & 0x0F);
 }
 
 INLINE_STM32 void UART_setup(void) {
