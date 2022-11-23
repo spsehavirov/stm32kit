@@ -47,7 +47,7 @@ INLINE_STM32 void UART_RX_Setup(enum pin pin) {
     MODIFY_REG(io_port(pin)->AFR[0], (15UL << (4 * io_pin(pin))), (7UL << 4 * io_pin(pin)));   // AF7 - UART
 }
 
-INLINE_STM32 uint32_t UART_baudrate_calculate(int f_clk, int desired_rate, int over8) {
+INLINE_STM32 uint32_t UART_baudrate_calculate(int pclk, int desired_rate, int over8) {
     const uint32_t div_sampling = (pclk * 25) / ((2 + 2 * (!!!over8)) * desired_rate);
     const uint32_t mantissa = div_sampling / 100;
     const uint32_t fraction = ((div_sampling - mantissa * 100) * 16 + 50) / 100;
