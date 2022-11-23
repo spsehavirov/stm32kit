@@ -10,6 +10,8 @@
 #ifndef STM32_KIT_UART
 #define STM32_KIT_UART
 
+#include <stdlib.h> // Podpora pro size_t
+
 #include "platform.h" // Podpora pro zjednodusene pinouty
 #include "chrono.h"
 #include "gpio.h"
