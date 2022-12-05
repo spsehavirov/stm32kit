@@ -45,15 +45,15 @@
  *               CLK:
  *                                               16MHz   HSI
  *               KeyPad:
- *                                               COL0    PA5
- *                                               COL1    PA6
- *                                               COL2    PA7
- *                                               COL3    PA8
+ *                                               COL0    PB0
+ *                                               COL1    PB10
+ *                                               COL2    PB13
+ *                                               COL3    PB15
  *
- *                                               ROW0    PB1
- *                                               ROW1    PB2
- *                                               ROW2    PB4
- *                                               ROW3    PB5
+ *                                               ROW0    PC9
+ *                                               ROW1    PC10
+ *                                               ROW2    PC11
+ *                                               ROW3    PC12
  *
  ************************************************************************
  * @attention
