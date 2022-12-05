@@ -29,15 +29,15 @@
  *               CLK:
  *                                               16MHz   HSI
  *               KeyPad:
- *                                               COL0    PB1
- *                                               COL1    PB2
- *                                               COL2    PB3
- *                                               COL3    PB4
+ *                                               COL0    PA5
+ *                                               COL1    PA6
+ *                                               COL2    PA7
+ *                                               COL3    PA8
  *
- *                                               ROW0    PB5
- *                                               ROW1    PB6
- *                                               ROW2    PB7
- *                                               ROW3    PB8
+ *                                               ROW0    PB1
+ *                                               ROW1    PB2
+ *                                               ROW2    PB4
+ *                                               ROW3    PB5
  *
  *             STM32NUCLEO-G071RB (STM32G071RBTx)
  *               Kod pro makro STM32_TYPE:
