@@ -20,12 +20,16 @@
 extern "C" {
 #endif
 
+#ifndef UART_BAUDRATE
+# define UART_BAUDRATE (9600)
+#endif
+
 #ifndef CUSTOM_USER_BTN
 # if ((STM32_TYPE == 71) || (STM32_TYPE == 152) || (STM32_TYPE == 401) || (STM32_TYPE == 411))
 #   error "Not supported yet!"
 # else
 #   define UART_TX      (PA2)  // 407
-#   define UART_RX      (PA2)  // 407
+#   define UART_RX      (PA3)  // 407
 # endif
 # define UART_TX_PIN    io_pin(UART_TX)
 # define UART_TX_PORT   io_port(UART_TX)
@@ -49,7 +53,7 @@ INLINE_STM32 void UART_RX_Setup(enum pin pin) {
     MODIFY_REG(io_port(pin)->AFR[0], (15UL << (4 * io_pin(pin))), (7UL << 4 * io_pin(pin)));   // AF7 - UART
 }
 
-INLINE_STM32 uint32_t UART_baudrate_calculate(int pclk, int desired_rate, int over8) {
+CONSTEXPR INLINE_STM32 uint32_t UART_baudrate_calculate(int pclk, int desired_rate, int over8) {
     const uint32_t div_sampling = (pclk * 25) / ((2 + 2 * (!!!over8)) * desired_rate);
     const uint32_t mantissa = div_sampling / 100;
     const uint32_t fraction = ((div_sampling - mantissa * 100) * 16 + 50) / 100;
@@ -63,7 +67,7 @@ INLINE_STM32 void UART_setup(void) {
 
     RCC->APB1ENR |= RCC_APB1ENR_USART2EN;
 
-    USART2->BRR |= UART_baudrate_calculate(SystemCoreClock, 9600, 0);
+    USART2->BRR |= UART_baudrate_calculate(SystemCoreClock, UART_BAUDRATE, 0);
     USART2->CR1 |= USART_CR1_TE | USART_CR1_RE; // Enable Tx & Rx
     USART2->CR1 |= USART_CR1_UE; // USART Enable
 }
