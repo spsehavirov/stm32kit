@@ -1,47 +1,12 @@
 /**
- *************************************************************************
- * @author   SPSE Havirov
- * @version  1.5.8
- * @date     10-April-2022 [v1.0]
- * @brief    Driver pro ovladani LCD v primem pripojeni (4bit komunikace).
+ * @file       lcd.h
+ * @brief      Driver pro ovladani LCD v primem pripojeni (4bit komunikace).
  *
- *           Podporovane desky:
- *             STM32F4-DISCOVERY (STM32F407VGTx)   -   skolni pripravek
- *               Kod pro makro STM32_TYPE:
- *                                               407
- *               CLK:
- *                                               16MHz   HSI
- *               LCD:
- *                                               RS      PE3
- *                                               R/W     PE4   (mozno zapojit primo na GND - omezeni prace s LCD)
- *                                               E       PE5
- *                                               DB4     PE6
- *                                               DB5     PE7
- *                                               DB6     PE8
- *                                               DB7     PE9
+ * @author     Petr Madecki (petr.madecki@spsehavirov.cz)
+ * @author     Tomas Michalek (tomas.michalek@spsehavirov.cz)
  *
- *             STM32NUCLEO-F401RE (STM32F401RETx)
- *               Kod pro makro STM32_TYPE:
- *                                               401
- *               CLK:
- *                                               16MHz   HSI
- *               LCD:
- *                                               RS      PA0
- *                                               R/W     PD2   (mozno zapojit primo na GND - omezeni prace s LCD)
- *                                               E       PA1
- *                                               DB4     PA4
- *                                               DB5     PB0
- *                                               DB6     PC1
- *                                               DB7     PC0
- *
- **************************************************************************
- * @attention
- *
- * Otestovano na: F407; F401, G071
- *
- * Netestovano: F411, L152
- *
- **************************************************************************
+ * @date       2023-03-29
+ * @copyright  Copyright SPSE Havirov (c) 2022
  */
 #ifndef STM32_KIT_LCD
 #define STM32_KIT_LCD
@@ -53,6 +18,22 @@
 #ifndef STRING_H_
 # include <string.h>
 #endif
+
+#	include "boards.h"
+# define LCD_RS_PIN    io_pin(LCD_RS)
+# define LCD_RS_PORT   io_port(LCD_RS)
+# define LCD_RW_PIN    io_pin(LCD_RW)
+# define LCD_RW_PORT   io_port(LCD_RW)
+# define LCD_EN_PIN    io_pin(LCD_EN)
+# define LCD_EN_PORT   io_port(LCD_EN)
+# define LCD_DB4_PIN   io_pin(LCD_DB4)
+# define LCD_DB4_PORT  io_port(LCD_DB4)
+# define LCD_DB5_PIN   io_pin(LCD_DB5)
+# define LCD_DB5_PORT  io_port(LCD_DB5)
+# define LCD_DB6_PIN   io_pin(LCD_DB6)
+# define LCD_DB6_PORT  io_port(LCD_DB6)
+# define LCD_DB7_PIN   io_pin(LCD_DB7)
+# define LCD_DB7_PORT  io_port(LCD_DB7)
 
 //#========================================================================
 //#=== Makra pro LCD - ZACATEK
@@ -73,22 +54,6 @@
 # define LCD_LINE3        (0x94)      // Prvni radek prvni pozice (0x14 + DDRAM = 0x94)
 # define LCD_LINE4        (0xD4)      // Prvni radek prvni pozice (0x54 + DDRAM = 0xD4)
 #endif
-
-#	include "boards.h"
-# define LCD_RS_PIN    io_pin(LCD_RS)
-# define LCD_RS_PORT   io_port(LCD_RS)
-# define LCD_RW_PIN    io_pin(LCD_RW)
-# define LCD_RW_PORT   io_port(LCD_RW)
-# define LCD_EN_PIN    io_pin(LCD_EN)
-# define LCD_EN_PORT   io_port(LCD_EN)
-# define LCD_DB4_PIN   io_pin(LCD_DB4)
-# define LCD_DB4_PORT  io_port(LCD_DB4)
-# define LCD_DB5_PIN   io_pin(LCD_DB5)
-# define LCD_DB5_PORT  io_port(LCD_DB5)
-# define LCD_DB6_PIN   io_pin(LCD_DB6)
-# define LCD_DB6_PORT  io_port(LCD_DB6)
-# define LCD_DB7_PIN   io_pin(LCD_DB7)
-# define LCD_DB7_PORT  io_port(LCD_DB7)
 
 //#=== Makra pro LCD - KONEC
 //#========================================================================

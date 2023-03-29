@@ -1,7 +1,21 @@
 /**
+ * @author   SPSE Havirov
+ * @version  1.0.0
+ * @date     29-March-2023 [1.0.0]
+ * @brief    Definice pinu a jejich funkci na desce Nucleo L151.
  *
+ *  STM32NUCLEO-L151RB (STM32L151RBTx)
+ *      Kod pro makro STM32_TYPE:
+ *                  151
+ *      CLK:
+ *                  16MHz   HSI
+ *      LCD:
+ *
+ *      KeyPad:
  *
  */
+
+
 
 #ifndef STM32_KIT_BOARDS_L151
 #define STM32_KIT_BOARDS_L151
@@ -28,5 +42,12 @@
 #   define KEYPAD_R1  (NC)
 #   define KEYPAD_R2  (NC)
 #   define KEYPAD_R3  (NC)
+
+/* ADC setup */
+#   define ADC_1      (PA1)
+
+/* UART setup */
+#   define UART_TX    (NC)
+#   define UART_RX    (NC)
 
 #endif /* STM32_KIT_BOARDS_L151 */

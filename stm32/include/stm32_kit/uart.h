@@ -1,5 +1,7 @@
 /**
  * @file       uart.h
+ * @brief      Ovladac pro rozhrani UART (RS-232).
+ *
  * @author     Petr Madecki (petr.madecki@spsehavirov.cz)
  * @author     Tomas Michalek (tomas.michalek@spsehavirov.cz)
  *
@@ -20,18 +22,11 @@
 extern "C" {
 #endif
 
-#ifndef CUSTOM_USER_BTN
-# if ((STM32_TYPE == 71) || (STM32_TYPE == 152) || (STM32_TYPE == 401) || (STM32_TYPE == 411))
-#   error "Not supported yet!"
-# else
-#   define UART_TX      (PA2)  // 407
-#   define UART_RX      (PA3)  // 407
-# endif 
-# define UART_TX_PIN    io_pin(UART_TX)
-# define UART_TX_PORT   io_port(UART_TX)
-# define UART_RX_PIN    io_pin(UART_RX)
-# define UART_RX_PORT   io_port(UART_RX)
-#endif
+#include "boards.h"
+#define UART_TX_PIN    io_pin(UART_TX)
+#define UART_TX_PORT   io_port(UART_TX)
+#define UART_RX_PIN    io_pin(UART_RX)
+#define UART_RX_PORT   io_port(UART_RX)
 
 INLINE_STM32 void UART_TX_Setup(enum pin pin) {
     GPIO_clock_enable(pin);
@@ -44,7 +39,7 @@ INLINE_STM32 void UART_TX_Setup(enum pin pin) {
 
 INLINE_STM32 void UART_RX_Setup(enum pin pin) {
     GPIO_clock_enable(pin);
-    
+
     MODIFY_REG(io_port(pin)->MODER,   (3UL << (2 * io_pin(pin))), (2UL << 2 * io_pin(pin)));   // AF mode
     MODIFY_REG(io_port(pin)->AFR[0], (15UL << (4 * io_pin(pin))), (7UL << 4 * io_pin(pin)));   // AF7 - UART
 }
@@ -53,7 +48,7 @@ INLINE_STM32 uint32_t UART_baudrate_calculate(int pclk, int desired_rate, int ov
     const uint32_t div_sampling = (pclk * 25) / ((2 + 2 * (!!!over8)) * desired_rate);
     const uint32_t mantissa = div_sampling / 100;
     const uint32_t fraction = ((div_sampling - mantissa * 100) * 16 + 50) / 100;
-    
+
     return (mantissa << 4) | (fraction & 0x0F);
 }
 
@@ -73,14 +68,14 @@ INLINE_STM32 void UART_putc(uint8_t znak) {
     USART2->DR = znak;
     while (!(USART2->SR & USART_SR_TXE)) {
         // Wait for transmision to complete
-    }		
+    }
 }
 
 INLINE_STM32 uint8_t UART_getc(void) {
     while (!(USART2->SR & USART_SR_RXNE)) {
         // Wait for transmision to complete
-    }	
-    return USART2->DR;	
+    }
+    return USART2->DR;
 }
 
 INLINE_STM32 size_t UART_write(const void *__restrict buf, size_t len) {
@@ -93,7 +88,7 @@ INLINE_STM32 size_t UART_write(const void *__restrict buf, size_t len) {
     }
     return count;
 }
-  
+
 INLINE_STM32 int UART_read(void *__restrict buf, size_t len) {
     uint8_t *str = (uint8_t *)buf;
     int alen = 0;
@@ -109,7 +104,7 @@ INLINE_STM32 int UART_read(void *__restrict buf, size_t len) {
 	*str = '\0';
     return alen;
 }
-  
+
 #ifdef __cplusplus
 }
 #endif

@@ -1,18 +1,12 @@
 /**
- *************************************************************************
- * @file     gpio.h
- * @author   SPSE Havirov
- * @version  1.5.8
- * @date     10-April-2022
- * @brief    Definice a funkce pro praci s GPIO
+ * @file       gpio.h
+ * @brief      Definice a funkce pro praci s GPIO
  *
- *************************************************************************
- * @attention
+ * @author     Petr Madecki (petr.madecki@spsehavirov.cz)
+ * @author     Tomas Michalek (tomas.michalek@spsehavirov.cz)
  *
- * Otestovano na: F407; F401, G071
- * Netestovano: F411, L152
- *
- *************************************************************************
+ * @date       2023-04-10
+ * @copyright  Copyright SPSE Havirov (c) 2022
  */
 #ifndef STM32_KIT_GPIO
 #define STM32_KIT_GPIO

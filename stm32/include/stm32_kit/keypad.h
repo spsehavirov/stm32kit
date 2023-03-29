@@ -6,39 +6,6 @@
  * @date     10-April-2022 [v1.0]
  * @brief    Driver pro ovladani LCD v primem pripojeni (4bit komunikace).
  *
- *           Podporovane desky:
- *             STM32F4-DISCOVERY (STM32F407VGTx)   -   skolni pripravek
- *               Kod pro makro STM32_TYPE:
- *                                               407
- *               CLK:
- *                                               16MHz   HSI
- *               KeyPad:
- *                                               COL0    PD0
- *                                               COL1    PD1
- *                                               COL2    PD2
- *                                               COL3    PD3     (skolni pripravek ma keypad pouze 3x4, domaci pripravky maji keypad 4x4)
- *
- *                                               ROW0    PD6
- *                                               ROW1    PD7
- *                                               ROW2    PD8
- *                                               ROW3    PD9
- *
- *             STM32NUCLEO-F401RE (STM32F401RETx)
- *               Kod pro makro STM32_TYPE:
- *                                               401
- *               CLK:
- *                                               16MHz   HSI
- *               KeyPad:
- *                                               COL0    PA5
- *                                               COL1    PA6
- *                                               COL2    PA7
- *                                               COL3    PA8
- *
- *                                               ROW0    PB1
- *                                               ROW1    PB2
- *                                               ROW2    PB4
- *                                               ROW3    PB5
- *
  ************************************************************************
  * @attention
  *
