@@ -2,6 +2,9 @@
 
 ## [next]:
 
+## [2.0.0] 2023-03-29:
+- Facelift of the project to clean up the process
+
 ## [1.5.9][18-November-2022]:
 
 - `Mod`: Reorganising the structure to better support the Git repository
