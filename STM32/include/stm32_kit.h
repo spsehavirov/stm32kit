@@ -86,6 +86,11 @@
 #ifndef STM32_KIT
 #define STM32_KIT
 
+#include "config.h"
+#if USE_RTOS == 1
+#include <RTL.h>
+#endif
+
 #include "stm32_kit/platform.h" /* Podpora pro desky */
 #include "stm32_kit/chrono.h"   /* Podpora pro casovani a delay smycky */
 #include "stm32_kit/gpio.h"     /* Podpora pro zjednodusene pinovani */
