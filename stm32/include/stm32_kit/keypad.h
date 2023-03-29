@@ -39,22 +39,6 @@
  *                                               ROW2    PB4
  *                                               ROW3    PB5
  *
- *             STM32NUCLEO-G071RB (STM32G071RBTx)
- *               Kod pro makro STM32_TYPE:
- *                                               71
- *               CLK:
- *                                               16MHz   HSI
- *               KeyPad:
- *                                               COL0    PB0
- *                                               COL1    PB10
- *                                               COL2    PB13
- *                                               COL3    PB15
- *
- *                                               ROW0    PC9
- *                                               ROW1    PC10
- *                                               ROW2    PC11
- *                                               ROW3    PC12
- *
  ************************************************************************
  * @attention
  *
@@ -76,61 +60,31 @@ extern "C" {
 #endif
 
 #ifndef KEYPAD_STEP // Prodleva mezi dalsim snimanim klaves
-# define KEYPAD_STEP 250
+# define KEYPAD_STEP 100
 #endif
 
 #ifndef KeyPad_KeyMap // V pripade, ze nebude definovano pole pro rozlozeni KeyPad, definuje se
 static uint8_t KeyPad_KeyMap[KEYPAD_ROWS][KEYPAD_COLS];
 #endif
 
-#ifndef CUSTOM_KBD
-# if (STM32_TYPE == 71) // Pro G071
-#   define KEYPAD_C0  (PB0)
-#   define KEYPAD_C1  (PB10)
-#   define KEYPAD_C2  (PB13)
-#   define KEYPAD_C3  (PB15)
-#   define KEYPAD_R0  (PC9)
-#   define KEYPAD_R1  (PC10)
-#   define KEYPAD_R2  (PC11)
-#   define KEYPAD_R3  (PC12)
-# elif (STM32_TYPE == 401) // Pro F401
-#   define KEYPAD_C0  (PA5)
-#   define KEYPAD_C1  (PA6)
-#   define KEYPAD_C2  (PA7)
-#   define KEYPAD_C3  (PA8)
-#   define KEYPAD_R0  (PB1)
-#   define KEYPAD_R1  (PB2)
-#   define KEYPAD_R2  (PB4)
-#   define KEYPAD_R3  (PB5)
-# elif (STM32_TYPE == 407) // Pro F407 (skolni pripravek)
-#   define KEYPAD_C0  (PD0)
-#   define KEYPAD_C1  (PD1)
-#   define KEYPAD_C2  (PD2)
-#   define KEYPAD_C3  (PD3)
-#   define KEYPAD_R0  (PD6)
-#   define KEYPAD_R1  (PD7)
-#   define KEYPAD_R2  (PD8)
-#   define KEYPAD_R3  (PD9)
-# else
-#   error "Neni vybrana zadna deska pro kterou by existovala definice!"
-# endif
-# define KEYPAD_C0_PIN    io_pin(KEYPAD_C0)
-# define KEYPAD_C0_PORT   io_port(KEYPAD_C0)
-# define KEYPAD_C1_PIN    io_pin(KEYPAD_C1)
-# define KEYPAD_C1_PORT   io_port(KEYPAD_C1)
-# define KEYPAD_C2_PIN    io_pin(KEYPAD_C2)
-# define KEYPAD_C2_PORT   io_port(KEYPAD_C2)
-# define KEYPAD_C3_PIN    io_pin(KEYPAD_C3)
-# define KEYPAD_C3_PORT   io_port(KEYPAD_C3)
-# define KEYPAD_R0_PIN    io_pin(KEYPAD_R0)
-# define KEYPAD_R0_PORT   io_port(KEYPAD_R0)
-# define KEYPAD_R1_PIN    io_pin(KEYPAD_R1)
-# define KEYPAD_R1_PORT   io_port(KEYPAD_R1)
-# define KEYPAD_R2_PIN    io_pin(KEYPAD_R2)
-# define KEYPAD_R2_PORT   io_port(KEYPAD_R2)
-# define KEYPAD_R3_PIN    io_pin(KEYPAD_R3)
-# define KEYPAD_R3_PORT   io_port(KEYPAD_R3)
-#endif
+
+#include "boards.h"
+#define KEYPAD_C0_PIN    io_pin(KEYPAD_C0)
+#define KEYPAD_C0_PORT   io_port(KEYPAD_C0)
+#define KEYPAD_C1_PIN    io_pin(KEYPAD_C1)
+#define KEYPAD_C1_PORT   io_port(KEYPAD_C1)
+#define KEYPAD_C2_PIN    io_pin(KEYPAD_C2)
+#define KEYPAD_C2_PORT   io_port(KEYPAD_C2)
+#define KEYPAD_C3_PIN    io_pin(KEYPAD_C3)
+#define KEYPAD_C3_PORT   io_port(KEYPAD_C3)
+#define KEYPAD_R0_PIN    io_pin(KEYPAD_R0)
+#define KEYPAD_R0_PORT   io_port(KEYPAD_R0)
+#define KEYPAD_R1_PIN    io_pin(KEYPAD_R1)
+#define KEYPAD_R1_PORT   io_port(KEYPAD_R1)
+#define KEYPAD_R2_PIN    io_pin(KEYPAD_R2)
+#define KEYPAD_R2_PORT   io_port(KEYPAD_R2)
+#define KEYPAD_R3_PIN    io_pin(KEYPAD_R3)
+#define KEYPAD_R3_PORT   io_port(KEYPAD_R3)
 
 
 INLINE_STM32 uint16_t KBD_read(void) {

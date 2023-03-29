@@ -19,6 +19,7 @@
 
   <project>
     <PathAndName>.\stm32\arch\STM32_G071RBTx\STM32_G071RBTx.uvprojx</PathAndName>
+    <NodeIsExpanded>1</NodeIsExpanded>
   </project>
 
 </ProjectWorkspace>

@@ -53,7 +53,8 @@ enum pin {
     PL0 = 0xB0, PL1, PL2, PL3, PL4, PL5, PL6, PL7, PL8, PL9, PL10, PL11, PL12, PL13, PL14, PL15,
     PM0 = 0xC0, PM1, PM2, PM3, PM4, PM5, PM6, PM7, PM8, PM9, PM10, PM11, PM12, PM13, PM14, PM15,
 #endif
-    P_INVALID = 0xFF
+    P_INVALID = 0xFF,
+    NC = 0xFE
 };
 
 /** @defgroup pin_bsrr 8.4.7 GPIO port bit set/reset register
@@ -140,7 +141,7 @@ INLINE_STM32 CONSTEXPR GPIO_TypeDef* io_port(enum pin pin) {
  * @brief Set value to the pin
  *
  * Set the value of the output pin using the BSRR register
- * 
+ *
  * @param pin Pin to be set
  * @param value value of the pin (0 or 1)
  * @returns None
@@ -151,11 +152,11 @@ INLINE_STM32 void io_set(enum pin pin, int value) {
 
 /**
  * @brief Get output value of the pin
- * 
+ *
  * Read pin value from the ODR register
- * 
+ *
  * @param pin Pin to be read
- * @return value of the pin 
+ * @return value of the pin
  */
 INLINE_STM32 int io_get(enum pin pin) {
     return READ_BIT(io_port(pin)->ODR, (1UL << io_pin(pin))) >> io_pin(pin);
@@ -163,11 +164,11 @@ INLINE_STM32 int io_get(enum pin pin) {
 
 /**
  * @brief Get input value of the pin
- * 
+ *
  * Read pin value from the IDR register
- * 
+ *
  * @param pin Pin to be read
- * @return value of the pin 
+ * @return value of the pin
  */
 INLINE_STM32 int io_read(enum pin pin) {
     return READ_BIT(io_port(pin)->IDR, (1UL << io_pin(pin))) >> io_pin(pin);

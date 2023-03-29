@@ -34,20 +34,6 @@
  *                                               DB6     PC1
  *                                               DB7     PC0
  *
- *             STM32NUCLEO-G071RB (STM32G071RBTx)
- *               Kod pro makro STM32_TYPE:
- *                                               71
- *               CLK:
- *                                               16MHz   HSI
- *               LCD:
- *                                               RS      PA0
- *                                               R/W     PF0   (mozno zapojit primo na GND - omezeni prace s LCD)
- *                                               E       PA1
- *                                               DB4     PA4
- *                                               DB5     PB1
- *                                               DB6     PB11
- *                                               DB7     PB12
- *
  **************************************************************************
  * @attention
  *
@@ -88,33 +74,7 @@
 # define LCD_LINE4        (0xD4)      // Prvni radek prvni pozice (0x54 + DDRAM = 0xD4)
 #endif
 
-
-#ifndef CUSTOM_LCD
-# if (STM32_TYPE == 71) // Pro G071
-#   define LCD_RS      (PA0)
-#   define LCD_RW      (PF0)
-#   define LCD_EN      (PA1)
-#   define LCD_DB4     (PA4)
-#   define LCD_DB5     (PB1)
-#   define LCD_DB6     (PB11)
-#   define LCD_DB7     (PB12)
-# elif (STM32_TYPE == 401) // Pro F401
-#   define LCD_RS      (PA0)
-#   define LCD_RW      (PD2)
-#   define LCD_EN      (PA1)
-#   define LCD_DB4     (PA4)
-#   define LCD_DB5     (PB0)
-#   define LCD_DB6     (PC1)
-#   define LCD_DB7     (PC0)
-# else // Pro F407 (skolni pripravek)
-#   define LCD_RS      (PE3)
-#   define LCD_RW      (PE4)
-#   define LCD_EN      (PE5)
-#   define LCD_DB4     (PE6)
-#   define LCD_DB5     (PE7)
-#   define LCD_DB6     (PE8)
-#   define LCD_DB7     (PE9)
-# endif
+#	include "boards.h"
 # define LCD_RS_PIN    io_pin(LCD_RS)
 # define LCD_RS_PORT   io_port(LCD_RS)
 # define LCD_RW_PIN    io_pin(LCD_RW)
@@ -129,7 +89,7 @@
 # define LCD_DB6_PORT  io_port(LCD_DB6)
 # define LCD_DB7_PIN   io_pin(LCD_DB7)
 # define LCD_DB7_PORT  io_port(LCD_DB7)
-#endif
+
 //#=== Makra pro LCD - KONEC
 //#========================================================================
 

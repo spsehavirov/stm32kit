@@ -44,7 +44,8 @@
 # Generated output files
 /Listings/*
 /Objects/*
-
+Listings/
+Objects/
 # Debugger files
 # define exception below if needed
 *.ini
