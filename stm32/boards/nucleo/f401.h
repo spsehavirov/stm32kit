@@ -98,4 +98,6 @@
 #   define UART_TX     (NC)
 #   define UART_RX     (NC)
 
+/* TODO: remove this commment */
+
 #endif /* STM32_KIT_BOARDS_F401 */

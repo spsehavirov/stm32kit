@@ -73,6 +73,19 @@ extern "C" {
 //#============================================================================================================================================
 
 /**
+ * @brief Inicializace uzivatelskeho tlacitka
+ */
+void BTN_setup(void) {
+  __disable_irq();
+
+  // Pro uzivatelske tlacitko (input mod)
+  GPIO_clock_enable(USER_BUTTON);
+  CLR_PIN_MODE(USER_BUTTON_PORT, 2 * USER_BUTTON);
+
+  __enable_irq();
+}
+
+/**
  * @brief  Defaultni inicializace pro vybrany typ desky (skolni nebo domaci).
  *         Aktivace portu pro vestavenou(e) LED a uzivatelske tlacitko, vcetne nastaveni smeru pinu na nich.
  *         Vyuzito (nejen) pro otestovani pripravku.
@@ -80,11 +93,6 @@ extern "C" {
  */
 void LED_setup(void) {
   __disable_irq();
-
-  // Pro uzivatelske tlacitko (input mod)
-  GPIO_clock_enable(USER_BUTTON);
-  CLR_PIN_MODE(USER_BUTTON_PORT, 2 * USER_BUTTON);
-
   // Pro vestavene LED
   // Nejdrive Aktivace CLK na portu
   // Pak vynulovani MODERu pro dany pin (input mod)
@@ -120,6 +128,9 @@ void LED_setup(void) {
   io_set(LED_EX_3, 1);
 
   __enable_irq();
+
+  // Z historicky duvodu:
+  BTN_setup(); //TODO: move to separate file
 }
 
 #ifdef __cplusplus

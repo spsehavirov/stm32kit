@@ -23,6 +23,7 @@
 #define LCD_8x2 (((LCD_COLS) == 8) && ((LCD_ROWS) == 2))
 #define LCD_16x2 (((LCD_COLS) == 16) && ((LCD_ROWS) == 2))
 
+#include "config.h"                                        // Nastaveni projektu
 #include "stm32_kit.h"                                     // Pripojeni globalniho konfiguracniho souboru pro praci s pripravkem.
 #include "stm32_kit/lcd.h"                                 // Pripojeni konfiguracniho souboru pro praci s LCD.
 

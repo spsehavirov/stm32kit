@@ -12,6 +12,7 @@
 #define STM32_KIT_GPIO
 
 #include "platform.h"
+#include <assert.h>
 
 #ifdef __cplusplus
 extern "C" {
