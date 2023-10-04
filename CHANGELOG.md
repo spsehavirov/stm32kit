@@ -2,6 +2,13 @@
 
 ## [next]:
 
+## [2.1.0] 2023-09-21:
+- `Add`: Adding `pin.h` to simplify the pin setup
+- `Mod`: Editing the drivers to support new pin.h header
+- `Mod`: Renaming `KeyPad_*` functions to `KBD_*` to match the style
+- `Mod`: Examples to use config header
+- `Add`: Typealias for `enum pin` as `pin_t` (POSIX naming)
+
 ## [2.0.0] 2023-03-29:
 - Facelift of the project to clean up the process
 

@@ -51,6 +51,7 @@ enum pin {
     P_INVALID = 0xFF,
     NC = 0xFE
 };
+typedef enum pin pin_t;
 
 /** @defgroup pin_bsrr 8.4.7 GPIO port bit set/reset register
  *  8.4.7 GPIO port bit set/reset register (GPIOx_BSRR) (x = A..I/J/K)
@@ -213,41 +214,6 @@ void GPIO_clock_disable(enum pin pin) {
   CLEAR_BIT(RCC->IO_ENABLE, source);
 }
 
-/**
-  * @brief  Aktivace CLK na portu.
-  *
-  * @param  name Nazev odpovidajici portu (A - I).
-  *
-*/
-void STM32_port_on(uint8_t port_name)
-{
-  uint8_t i;
-
-  for (i = 0; i < sizeof(STM32_port_name); i++) {
-    if (STM32_port_name[i] == port_name) {
-      SET_BIT(RCC->IO_ENABLE, (1UL << i));
-      break;
-    }
-  }
-}
-
-/**
-  * @brief  Deaktivace CLK na portu.
-  *
-  * @param  name Nazev odpovidajici portu (A - I).
-  *
-*/
-void STM32_port_off(uint8_t port_name)
-{
-  uint8_t i;
-
-  for (i = 0; i < sizeof(STM32_port_name); i++) {
-    if (STM32_port_name[i] == port_name) {
-      CLEAR_BIT(RCC->IO_ENABLE, (1UL << i));
-      break;
-    }
-  }
-}
 
 //#=== Aktivace/deaktivace portu - KONEC
 //#=======================================================================

@@ -21,6 +21,11 @@
 #include "platform.h" // Podpora pro zjednodusene pinouty
 #include "chrono.h"
 #include "gpio.h"
+#include "pin.h"
+
+#include "config.h"   // Nastaveni projektu
+#include "boards.h"   // Piny ktere budeme pouzivat
+
 
 #ifdef __cplusplus
 extern "C" {
@@ -30,51 +35,122 @@ extern "C" {
 # define KEYPAD_STEP 100
 #endif
 
-#ifndef KeyPad_KeyMap // V pripade, ze nebude definovano pole pro rozlozeni KeyPad, definuje se
-static uint8_t KeyPad_KeyMap[KEYPAD_ROWS][KEYPAD_COLS];
+#ifndef KBD_MAP // V pripade, ze nebude definovano pole pro rozlozeni KeyPad, definuje se
+static uint8_t KBD_MAP[KEYPAD_ROWS][KEYPAD_COLS];
 #endif
 
+const enum pin KBD_rows[] = {
+#if KEYPAD_ROWS >= 1
+    KEYPAD_R0,
+#endif
+#if KEYPAD_ROWS >= 2
+    KEYPAD_R1,
+#endif
+#if KEYPAD_ROWS >= 3
+    KEYPAD_R2,
+#endif
+#if KEYPAD_ROWS >= 4
+    KEYPAD_R3,
+#endif
+    P_INVALID
+};
+const enum pin KBD_cols[] = {
+#if KEYPAD_COLS >= 1
+    KEYPAD_C0,
+#endif
+#if KEYPAD_COLS >= 2
+    KEYPAD_C1,
+#endif
+#if KEYPAD_COLS >= 3
+    KEYPAD_C2,
+#endif
+#if KEYPAD_COLS >= 4
+    KEYPAD_C3,
+#endif
+    P_INVALID
+};
 
-#include "boards.h"
-#define KEYPAD_C0_PIN    io_pin(KEYPAD_C0)
-#define KEYPAD_C0_PORT   io_port(KEYPAD_C0)
-#define KEYPAD_C1_PIN    io_pin(KEYPAD_C1)
-#define KEYPAD_C1_PORT   io_port(KEYPAD_C1)
-#define KEYPAD_C2_PIN    io_pin(KEYPAD_C2)
-#define KEYPAD_C2_PORT   io_port(KEYPAD_C2)
-#define KEYPAD_C3_PIN    io_pin(KEYPAD_C3)
-#define KEYPAD_C3_PORT   io_port(KEYPAD_C3)
-#define KEYPAD_R0_PIN    io_pin(KEYPAD_R0)
-#define KEYPAD_R0_PORT   io_port(KEYPAD_R0)
-#define KEYPAD_R1_PIN    io_pin(KEYPAD_R1)
-#define KEYPAD_R1_PORT   io_port(KEYPAD_R1)
-#define KEYPAD_R2_PIN    io_pin(KEYPAD_R2)
-#define KEYPAD_R2_PORT   io_port(KEYPAD_R2)
-#define KEYPAD_R3_PIN    io_pin(KEYPAD_R3)
-#define KEYPAD_R3_PORT   io_port(KEYPAD_R3)
-
-
-INLINE_STM32 uint16_t KBD_read(void) {
+INLINE_STM32 uint16_t KBD_read_wires(void) {
   uint16_t tmp; // Pomocna promenna, ve ktere muze byt uchovana hodnota stisknute klavesy.
 
-  tmp = ((READ_BIT(KEYPAD_R0_PORT->ODR, (1UL << KEYPAD_R0_PIN)) >> KEYPAD_R0_PIN) << 4) | // Vymaskovani radku
-        ((READ_BIT(KEYPAD_R1_PORT->ODR, (1UL << KEYPAD_R1_PIN)) >> KEYPAD_R1_PIN) << 5) |
-        ((READ_BIT(KEYPAD_R2_PORT->ODR, (1UL << KEYPAD_R2_PIN)) >> KEYPAD_R2_PIN) << 6) |
-        ((READ_BIT(KEYPAD_R3_PORT->ODR, (1UL << KEYPAD_R3_PIN)) >> KEYPAD_R3_PIN) << 7);
+  tmp = ((READ_BIT(io_port(KEYPAD_R0)->ODR, (1UL << io_pin(KEYPAD_R0))) >> io_pin(KEYPAD_R0)) << 4) | // Vymaskovani radku
+        ((READ_BIT(io_port(KEYPAD_R1)->ODR, (1UL << io_pin(KEYPAD_R1))) >> io_pin(KEYPAD_R1)) << 5) |
+        ((READ_BIT(io_port(KEYPAD_R2)->ODR, (1UL << io_pin(KEYPAD_R2))) >> io_pin(KEYPAD_R2)) << 6) 
+#if KEYPAD_ROWS >= 4
+      | ((READ_BIT(io_port(KEYPAD_R3)->ODR, (1UL << io_pin(KEYPAD_R3))) >> io_pin(KEYPAD_R3)) << 7)
+#endif
+      ;
 
-  tmp |= ((READ_BIT(KEYPAD_C0_PORT->IDR, (1UL << KEYPAD_C0_PIN)) >> KEYPAD_C0_PIN) << 0) | // Vymaskovani sloupcu
-         ((READ_BIT(KEYPAD_C1_PORT->IDR, (1UL << KEYPAD_C1_PIN)) >> KEYPAD_C1_PIN) << 1) |
-         ((READ_BIT(KEYPAD_C2_PORT->IDR, (1UL << KEYPAD_C2_PIN)) >> KEYPAD_C2_PIN) << 2) |
-         ((READ_BIT(KEYPAD_C3_PORT->IDR, (1UL << KEYPAD_C3_PIN)) >> KEYPAD_C3_PIN) << 3);
+  tmp |= ((READ_BIT(io_port(KEYPAD_C0)->IDR, (1UL << io_pin(KEYPAD_C0))) >> io_pin(KEYPAD_C0)) << 0) | // Vymaskovani sloupcu
+         ((READ_BIT(io_port(KEYPAD_C1)->IDR, (1UL << io_pin(KEYPAD_C1))) >> io_pin(KEYPAD_C1)) << 1) |
+         ((READ_BIT(io_port(KEYPAD_C2)->IDR, (1UL << io_pin(KEYPAD_C2))) >> io_pin(KEYPAD_C2)) << 2)
+#if KEYPAD_COLS >= 4  
+       | ((READ_BIT(io_port(KEYPAD_C3)->IDR, (1UL << io_pin(KEYPAD_C3))) >> io_pin(KEYPAD_C3)) << 3)
+#endif
+       ;
 
   return tmp;
 }
 
 INLINE_STM32 void KBD_activateRow(int row) {
-  io_set(KEYPAD_R0, 0 != row);
-  io_set(KEYPAD_R1, 1 != row);
-  io_set(KEYPAD_R2, 2 != row);
-  io_set(KEYPAD_R3, 3 != row);
+#if KEYPAD_ROWS >= 1
+    io_set(KBD_rows[0], 0 != row);
+#endif
+#if KEYPAD_ROWS >= 2
+    io_set(KBD_rows[1], 1 != row);
+#endif
+#if KEYPAD_ROWS >= 3
+    io_set(KBD_rows[2], 2 != row);
+#endif
+#if KEYPAD_ROWS >= 4
+    io_set(KBD_rows[3], 3 != row);
+#endif
+}
+
+INLINE_STM32 int KBD_wireValueForRow(int row) {
+  switch (row) {
+    case 0: return 0xE; // 0x1110
+    case 1: return 0xD; // 0x1101
+    case 2: return 0xB; // 0x1011
+    case 3: return 0x7; // 0x0111
+  }
+  return -1;
+}
+
+/**
+ * @brief  Funkce pro zisteni hodnoty, vybrane v radku
+ *
+ * @return  Pokud neni stisknuta zadna klavesa vraci 0 (s nastavenim chyby),
+ *          jinak prislusny znak, dle zadefinovaneho rozlozeni pro KeyPad.
+ */
+uint8_t KBD_findKeyInRow(uint16_t value, int row, int *error) {
+  // pin & (0x0F) // lower
+  // (pin & (0xF0)) >> 4; // Get Upper part
+  
+  if (((value & 0xF0) >> 4) != KBD_wireValueForRow(row)) {
+    *error = -1; // Not in this row
+    return 0;
+  }
+
+  *error = 0; // No error if we find something
+  switch (value & 0x0F) // Kontrola, zda nebylo stisknuto tlacitko ve vybranem radku a sloupci
+  {
+#if KEYPAD_COLS >= 1
+    case 0xE: return KBD_MAP[row][0];
+#endif
+#if KEYPAD_COLS >= 2
+    case 0xD: return KBD_MAP[row][1];
+#endif
+#if KEYPAD_COLS >= 3
+    case 0xB: return KBD_MAP[row][2];
+#endif
+#if KEYPAD_COLS >= 4
+    case 0x7: return KBD_MAP[row][3];
+#endif
+  }
+  
+  *error = -2; // Not found
+  return 0;
 }
 
 /**
@@ -82,91 +158,35 @@ INLINE_STM32 void KBD_activateRow(int row) {
  *
  * @return  Pokud neni stisknuta zadna klavesa vraci 0, jinak prislusny znak, dle zadefinovaneho rozlozeni pro KeyPad.
  */
-uint8_t KeyPad_getKey(void) {
+
+uint8_t KBD_read(void) {
   delay_ms(KEYPAD_STEP);
 
-  uint16_t readout = 0;
-
-  KBD_activateRow(0); // Aktivace radku 0. radku a deaktivace zbylych radku
-  readout = KBD_read();
-  switch (readout) // Kontrola, zda nebylo stisknuto tlacitko ve vybranem radku a sloupci
-  {
-    case 0xEE: return KeyPad_KeyMap[0][0];
-    case 0xED: return KeyPad_KeyMap[0][1];
-    case 0xEB: return KeyPad_KeyMap[0][2];
-    case 0xE7: return KeyPad_KeyMap[0][3];
-  }
-
-  KBD_activateRow(1); // Aktivace radku 1. radku a deaktivace zbylych radku
-  readout = KBD_read();
-  switch (readout) // Kontrola, zda nebylo stisknuto tlacitko ve vybranem radku a sloupci
-  {
-    case 0xDE: return KeyPad_KeyMap[1][0];
-    case 0xDD: return KeyPad_KeyMap[1][1];
-    case 0xDB: return KeyPad_KeyMap[1][2];
-    case 0xD7: return KeyPad_KeyMap[1][3];
-  }
-
-  KBD_activateRow(2);  // Aktivace radku 2. radku a deaktivace zbylych radku
-  readout = KBD_read();
-  switch (readout) // Kontrola, zda nebylo stisknuto tlacitko ve vybranem radku a sloupci
-  {
-    case 0xBE: return KeyPad_KeyMap[2][0];
-    case 0xBD: return KeyPad_KeyMap[2][1];
-    case 0xBB: return KeyPad_KeyMap[2][2];
-    case 0xB7: return KeyPad_KeyMap[2][3];
-  }
-
-  KBD_activateRow(3); // Aktivace radku 3. radku a deaktivace zbylych radku
-  readout = KBD_read();
-  switch (readout) // Kontrola, zda nebylo stisknuto tlacitko ve vybranem radku a sloupci
-  {
-    case 0x7E: return KeyPad_KeyMap[3][0];
-    case 0x7D: return KeyPad_KeyMap[3][1];
-    case 0x7B: return KeyPad_KeyMap[3][2];
-    case 0x77: return KeyPad_KeyMap[3][3];
+  int err;
+  uint8_t key;
+  
+  for (int row; row < KEYPAD_ROWS; row++) {
+    KBD_activateRow(row); // Aktivace radku n-teho radku a deaktivace zbylych radku
+    key = KBD_findKeyInRow(KBD_read_wires(), row, &err);
+    if (err == 0) return key;
   }
 
   return 0;
-}
-
-INLINE_STM32 void KBD_ioSetupRow(enum pin pin) {
-  // 1. Aktivace CLK na portu - ZACATEK
-  GPIO_clock_enable(pin);
-  // 1. Aktivace CLK na portu - KONEC
-
-  MODIFY_REG(io_port(pin)->MODER,   (3UL << (2 * io_pin(pin))), (1UL << 2 * io_pin(pin)));   // Output
-   CLEAR_BIT(io_port(pin)->OTYPER,  (1UL << (1 * io_pin(pin))));                             // Push-pull
-  MODIFY_REG(io_port(pin)->OSPEEDR, (3UL << (2 * io_pin(pin))), (2UL << 2 * io_pin(pin)));   // High speed
-   CLEAR_BIT(io_port(pin)->PUPDR,   (3UL << (2 * io_pin(pin))));                             // No pull-up, pull-down
-}
-
-INLINE_STM32 void KBD_ioSetupCol(enum pin pin) {
-  GPIO_clock_enable(pin);
-
-   CLEAR_BIT(io_port(pin)->MODER, (3UL << (2 * io_pin(pin))));                             // Input
-  MODIFY_REG(io_port(pin)->PUPDR, (3UL << (2 * io_pin(pin))), (1UL << 2 * io_pin(pin)));   // Pull-up
 }
 
 /**
  * @brief  Pocatecni inicializace pro KeyPad
  *
  */
-void KeyPad_setup(void)
-{
+void KBD_setup(void) {
   __disable_irq();
-  // 1. Nastaveni pinu na portu - ZACATEK
-  //  Pro sloupce
-  KBD_ioSetupCol(KEYPAD_C0);
-  KBD_ioSetupCol(KEYPAD_C1);
-  KBD_ioSetupCol(KEYPAD_C2);
-  KBD_ioSetupCol(KEYPAD_C3);
-  // Pro radky
-  KBD_ioSetupRow(KEYPAD_R0);
-  KBD_ioSetupRow(KEYPAD_R1);
-  KBD_ioSetupRow(KEYPAD_R2);
-  KBD_ioSetupRow(KEYPAD_R3);
-  // 1. Nastaveni pinu na portu - KONEC
+
+  for (int i = 0; KBD_cols[i] != P_INVALID; i++) {
+    pin_setup(KBD_cols[i], PIN_MODE_INPUT, PIN_PULL_UP, PIN_SPEED_DEFAULT, PIN_TYPE_DEFAULT);
+  }
+  for (int i = 0; KBD_rows[i] != P_INVALID; i++) {
+    pin_setup(KBD_rows[i], PIN_MODE_OUTPUT, PIN_PULL_NONE, PIN_SPEED_HIGH, PIN_TYPE_PUSHPULL);
+  }
   __enable_irq();
 }
 
@@ -174,4 +194,4 @@ void KeyPad_setup(void)
 }
 #endif
 
-#endif /* STM32_KEYPAD */
+#endif /* STM32_KIT_STM32_KIT_KEYPAD */

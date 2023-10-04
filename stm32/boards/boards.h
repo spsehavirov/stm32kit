@@ -16,7 +16,7 @@
 # elif (STM32_TYPE == 411)
 #	include "nucleo/f411.h"
 # elif (STM32_TYPE == 71)
-#	include "nucleo/g71.h"
+#	include "nucleo/g071.h"
 # elif (STM32_TYPE == 152)
 # 	include "nucleo/l152.h"
 # else

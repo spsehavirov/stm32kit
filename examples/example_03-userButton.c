@@ -1,5 +1,5 @@
 /**
-  ********************************************************************************************************************************************
+  ******************************************************************************
   * @file     STM32_00_HelloWorld_03-userButton.c
   * @author   SPSE Havirov
   * @version  0.9
@@ -8,47 +8,46 @@
   *
   * !!! PROZATIM FUNKCNI JEN PRO F407 !!!
   *
-  ********************************************************************************************************************************************
+  ******************************************************************************
   * @attention
   *
   * Otestovano na: F407
   *
   * Netestovano: F401, F411, G071, L152
   *
-  ********************************************************************************************************************************************
+  ******************************************************************************
 */
 
-#include "stm32_kit.h"                                     // Pripojeni globalniho konfiguracniho souboru pro praci s pripravkem.
+#include "stm32_kit.h"
 #include "stm32_kit/led.h"
+#include "stm32_kit/button.h"
 
-#define LED_BLINK_STEP  1000                               // Krok blikani LED
+#define LED_BLINK_STEP  1000              // Krok blikani LED
+volatile uint16_t step = LED_BLINK_STEP;  // Vychozi krok pozdrzeni programu
 
-const enum pin ledky[] = {
+const enum pin ledky_in[] = {
     LED_IN_0,
     LED_IN_1,
     LED_IN_2,
-    LED_IN_3
+    LED_IN_3,
+    P_INVALID
 };
 
-const enum pin ex_ledky[] = {
+const enum pin ledky_ex[] = {
     LED_EX_0,
     LED_EX_1,
     LED_EX_2,
-    LED_EX_3
+    LED_EX_3,
+    P_INVALID
 };
 
-
 BOARD_SETUP void setup(void) {
-  LED_setup();                                                    // Pocatecni inicializace pripravku.
-  SystemCoreClockUpdate();                                        // Do SystemCoreClock se nahraje frekvence jadra.
-  SysTick_Config(SystemCoreClock / 10000);                        // Konfigurace SysTick timeru.
-}
-
-volatile uint16_t step = LED_BLINK_STEP;                          // Vychozi krok pozdrzeni programu.
-
-int main(void) {
-  uint8_t i;  
-
+  SystemCoreClockUpdate();                     // Do SystemCoreClock se nahraje frekvence jadra.
+  SysTick_Config(SystemCoreClock / 10000);     // Konfigurace SysTick timeru.
+  
+  LED_setup();
+  BTN_setup();
+  
   //=== Nastaveni prerusovaciho systemu - prozatim pouze pro F407 - ZACATEK
   RCC->APB2ENR |= (1UL << 14);          // Enable SYSCNFG
   SYSCFG->EXTICR[0] &= ~(0x0F << 0);    // Bits[3:2:1:0] = (0:0:0:0)  -> configure EXTI0 line for PA0
@@ -58,31 +57,23 @@ int main(void) {
   NVIC_SetPriority (EXTI0_IRQn, 1);     // Set Priority
   NVIC_EnableIRQ (EXTI0_IRQn);          // Enable Interrupt
   //=== Nastaveni prerusovaciho systemu - prozatim pouze pro F407 - KONEC
+}
+
+void LED_toggle(const pin_t leds[], int state, int delay) {
+  for (i = 0; leds[i] != P_INVALID; i++) {
+    io_set(leds[i], state);
+    delay_ms(delay);
+  }
+}
+
+int main(void) {
+  uint8_t i;
 
   while (1) {
-      // Rozsviceni vestavenych LED.
-      for (i = 0; i < 4; i++) {
-        io_set(ledky[i], 1);
-        delay_ms(step);
-      }
-
-      // Rozsviceni externich LED.
-      for (i = 0; i < 4; i++) {
-        io_set(ex_ledky[i], 0);
-        delay_ms(step);
-      }
-
-      // Zhasnuti vestavenych LED.
-      for (i = 0; i < 4; i++) {
-        io_set(ledky[i], 0);
-        delay_ms(step);
-      }
-
-      // Zhasnuti externich LED.
-      for (i = 0; i < 4; i++) {
-        io_set(ex_ledky[i], 1);
-        delay_ms(step);
-      }
+      LED_toggle(ledky_in, 1, step); // Rozsviceni vestavenych LED.
+      LED_toggle(ledky_ex, 0, step); // Rozsviceni externich LED.
+      LED_toggle(ledky_in, 0, step); // Zhasnuti vestavenych LED.
+      LED_toggle(ledky_ex, 1, step); // Zhasnuti externich LED.
   }
 
   // return 0;
@@ -92,7 +83,7 @@ int main(void) {
 void EXTI0_IRQHandler(void) {
   if (EXTI->PR & (1UL << 0)) {
     // EXTI0 interrupt pending?                        
-    EXTI->PR |= (1UL << 0);       // Clear pending interrupt
+    EXTI->PR |= (1UL << 0); // Clear pending interrupt
 
     step /= 2;
     if (step < 100) {

@@ -9,16 +9,17 @@
 
   <project>
     <PathAndName>.\stm32\arch\STM32_F407VGTx\STM32_F407VGTx.uvprojx</PathAndName>
-    <NodeIsActive>1</NodeIsActive>
     <NodeIsExpanded>1</NodeIsExpanded>
   </project>
 
   <project>
     <PathAndName>.\stm32\arch\STM32_F401RETx\STM32_F401RETx.uvprojx</PathAndName>
+    <NodeIsExpanded>1</NodeIsExpanded>
   </project>
 
   <project>
     <PathAndName>.\stm32\arch\STM32_G071RBTx\STM32_G071RBTx.uvprojx</PathAndName>
+    <NodeIsActive>1</NodeIsActive>
     <NodeIsExpanded>1</NodeIsExpanded>
   </project>
 

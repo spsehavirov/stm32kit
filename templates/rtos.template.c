@@ -1,13 +1,9 @@
 /**
  * @file   <nazev>.c
- * @author <Jmeno Prijmeni>
+ * @author <Jmeno Přijmeni>
  * 
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-
-#include <RTL.h>
 #include "stm32_kit.h"
 
 

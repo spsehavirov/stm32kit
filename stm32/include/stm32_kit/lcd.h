@@ -14,26 +14,13 @@
 #include "platform.h"
 #include "chrono.h"
 #include "gpio.h"
+#include "pin.h"
 
 #ifndef STRING_H_
 # include <string.h>
 #endif
 
 #	include "boards.h"
-# define LCD_RS_PIN    io_pin(LCD_RS)
-# define LCD_RS_PORT   io_port(LCD_RS)
-# define LCD_RW_PIN    io_pin(LCD_RW)
-# define LCD_RW_PORT   io_port(LCD_RW)
-# define LCD_EN_PIN    io_pin(LCD_EN)
-# define LCD_EN_PORT   io_port(LCD_EN)
-# define LCD_DB4_PIN   io_pin(LCD_DB4)
-# define LCD_DB4_PORT  io_port(LCD_DB4)
-# define LCD_DB5_PIN   io_pin(LCD_DB5)
-# define LCD_DB5_PORT  io_port(LCD_DB5)
-# define LCD_DB6_PIN   io_pin(LCD_DB6)
-# define LCD_DB6_PORT  io_port(LCD_DB6)
-# define LCD_DB7_PIN   io_pin(LCD_DB7)
-# define LCD_DB7_PORT  io_port(LCD_DB7)
 
 //#========================================================================
 //#=== Makra pro LCD - ZACATEK
@@ -73,19 +60,18 @@ INLINE_STM32 void LCD_busy(void) { delay_us(4); } // 400us; Pokud nebude fungova
  * @param  nibble Hodnota v rozmezi 0 - F.
  *
  */
-INLINE_STM32 void LCD_write_nibble(uint8_t nibble)
-{
+INLINE_STM32 void LCD_write_nibble(uint8_t nibble) {
   io_set(LCD_RW, 0);
   io_set(LCD_EN, 0);
   delay_us(1);       // 100us
   io_set(LCD_EN, 1);
 
   nibble &= 0x0F; // Vymaskovani spodnich 4 bitu ze vstupni hodnoty
-
-  MODIFY_REG(LCD_DB4_PORT->ODR, (1UL << LCD_DB4_PIN), (((nibble & 0x1) >> 0) << LCD_DB4_PIN)); // Zapis informace
-  MODIFY_REG(LCD_DB5_PORT->ODR, (1UL << LCD_DB5_PIN), (((nibble & 0x2) >> 1) << LCD_DB5_PIN)); //  na prislusne
-  MODIFY_REG(LCD_DB6_PORT->ODR, (1UL << LCD_DB6_PIN), (((nibble & 0x4) >> 2) << LCD_DB6_PIN)); //  piny (zapis
-  MODIFY_REG(LCD_DB7_PORT->ODR, (1UL << LCD_DB7_PIN), (((nibble & 0x8) >> 3) << LCD_DB7_PIN)); //  bit po bitu).
+  
+  io_set(LCD_DB4, (nibble & 0x1) >> 0); // Zapis informace
+  io_set(LCD_DB5, (nibble & 0x2) >> 1); //  na prislusne
+  io_set(LCD_DB6, (nibble & 0x4) >> 2); //  piny (zapis
+  io_set(LCD_DB7, (nibble & 0x8) >> 3); //  bit po bitu).
 
   delay_us(1);
   io_set(LCD_EN, 0);
@@ -98,8 +84,7 @@ INLINE_STM32 void LCD_write_nibble(uint8_t nibble)
  * @param  cmd Kod pro ridici prikaz.
  *
  */
-INLINE_STM32 void LCD_set(uint8_t cmd)
-{
+INLINE_STM32 void LCD_set(uint8_t cmd) {
   LCD_busy(); // Casova prodleva pro zpracovani ridicich prikazu.
 
   io_set(LCD_RS, 0);
@@ -109,12 +94,8 @@ INLINE_STM32 void LCD_set(uint8_t cmd)
 }
 
 INLINE_STM32 void LCD_io_setup(enum pin pin) {
-  GPIO_clock_enable(pin);
-
-  MODIFY_REG(io_port(pin)->MODER,   (3UL << (2 * io_pin(pin))), (1UL << 2 * io_pin(pin)));   // Output
-   CLEAR_BIT(io_port(pin)->OTYPER,  (1UL << io_pin(pin)));                                   // Push-pull
-  MODIFY_REG(io_port(pin)->OSPEEDR, (3UL << (2 * io_pin(pin))), (2UL << 2 * io_pin(pin)));   // High speed
-   CLEAR_BIT(io_port(pin)->PUPDR,   (3UL << 2 * io_pin(pin)));                               // Push-pull
+  pin_enable(pin);
+  pin_setup(pin, PIN_MODE_OUTPUT, PIN_PULL_DEFAULT, PIN_SPEED_HIGH, PIN_TYPE_PUSHPULL);
 }
 
 /**
@@ -183,13 +164,17 @@ void LCD_symbol(uint8_t data)
  *
  */
 
-void LCD_print(const char *__restrict__ text)
-{
+void LCD_print(const char *__restrict__ text) {
   uint8_t i;
 
   for (i = 0; i < strlen(text); i++) {
     LCD_symbol(text[i]);
   }
+}
+
+void LCD_goto(int x, int y) {
+  const uint8_t row_offset[] = { 0x00, 0x40 };
+  LCD_set(0x80 | (x + row_offset[y - 1]));
 }
 //#=== Rutiny pro praci s LCD - KONEC
 //#========================================================================

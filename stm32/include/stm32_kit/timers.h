@@ -33,7 +33,18 @@
   *
   **************************************************************************
   */
-#include "platform.h"
+ 
+#ifndef STM32_KIT_TIMERS
+#define STM32_KIT_TIMERS
+
+#include "platform.h" /* Podpora pro desky */
+#include "chrono.h"   /* Podpora pro casovani a delay smycky */
+#include "gpio.h"     /* Podpora pro zjednodusene pinovani */
+#include "pin.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 //#=========================================================================
 //#=== Makra pro casovace - ZACATEK
@@ -115,3 +126,9 @@ void TIM6_delay(void)
 
   TIM6->CR1 &= ~TIM_CR1_CEN;                  // Vypnuti casovace.
 }
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* STM32_KIT_TIMERS */

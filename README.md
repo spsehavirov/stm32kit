@@ -4,23 +4,31 @@
 
 ### Nastavení projektu
 
-Jedna se o multi-workspace project, pri otvirani projektu nacist hlavni soubor `STM32_project.uvmpw`
+Jedna se o multi-workspace project, pri otvirani projektu nacist hlavni soubor
+`STM32_project.uvmpw`
 
 ### Výběr přípravku
 
-V levé části "WorkSpace" postačí kliknout pravé tlačítko myši a dat `aktivovat projekt`, veškeré další nastavení pro daný přípravek bude
-provedeno automaticky v ramci hl. config_kit souboru. Nastaveni samotneho projektu (cast v "kouzelné hůlce") **neměnit**!
+V levé části "WorkSpace" postačí kliknout pravé tlačítko myši a dat 
+`aktivovat projekt`, veškeré další nastavení pro daný přípravek bude
+provedeno automaticky v ramci hl. config_kit souboru. Nastaveni 
+samotneho projektu (cast v "kouzelné hůlce") **neměnit**!
 
 ### Organizace projektu
 
-| Adresář                    | Popis                                                  |
-|----------------------------|--------------------------------------------------------|
-| `STM32/`                   | Hlavní adresář se soubory pro podportu STM32 platformy |
-| `docs`                     | Dokumentace k projektu (stažená zvlášť - git modul)    |
-| `STM32/arch`               | Projekty a soubory používané Keilem pro board support  |
-| `STM32/arch/STM32_xxxxxx/` | Jednotlivý projekt pro danou desku/platformu           |
-| `STM32/include`            | Drivery pro používané přípravky                        |
-| `STM32/src`                | Zdrojové kódy pro jednotlivé úlohy                     |
+| Adresář               | Popis                                                 |
+|-----------------------|-------------------------------------------------------|
+| `src/`                | Místo pro váš kód, standartně  `app.c`                |
+| `docs/`               | Dokumentace k projektu (stažená zvlášť - git modul)   |
+| `examples/`           | Zdrojové kódy pro jednotlivé příklady (mimo písemky)  |
+| `templates/`          | Šablony pro aplikaci s i bez RTOS                     |
+| `stm32/`              | Hlavní adresář se soubory pro podporu STM32 platformy |
+| `stm32/arch`          | Projekty a soubory používané Keilem pro board support |
+| `STM32/arch/STM32_*/` | Jednotlivý projekt pro danou desku/platformu          |
+| `stm32/boards/`       | Konfigurace pinu pro jednotlivé desky (DISC a NUCLEO) |
+| `stm32/config/`       | Konfigurace projektu, nastavení pro RTOS i periferie  |
+| `stm32/include/`      | Drivery pro používané přípravky                       |
+
 
 ## Podpora
 
