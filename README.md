@@ -38,7 +38,7 @@ Projekt pro správnou funkci potřebuje (minimálně) následující balíčky p
 |--------------------------|----------------------------------------------|
 | F407, F401, F411         | `Keil.STM32F4xx_DFP.2.7.0.pack`              |
 | L151, L152               | `Keil.STM32L1xx_DFP.1.2.0.pack`              |
-| G071                     | `Keil.STM32G0xx_DFP.1.1.0.pack`              |
+| G071                     | `Keil.STM32G0xx_DFP.1.5.0.pack`              |
 
 Testováno s `ARM Keil uVision 5.18+` (5.37 - hlavní vývojová verze pro 1.5).
 
