@@ -60,7 +60,7 @@ BOARD_SETUP void setup(void) {
 }
 
 void LED_toggle(const pin_t leds[], int state, int delay) {
-  for (i = 0; leds[i] != P_INVALID; i++) {
+  for (int i = 0; leds[i] != P_INVALID; i++) {
     io_set(leds[i], state);
     delay_ms(delay);
   }
