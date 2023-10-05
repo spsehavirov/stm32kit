@@ -77,6 +77,16 @@ extern "C" {
 #ifndef KEYPAD_STEP
  #define KEYPAD_STEP        150
 #endif
+// </h>
+
+// <h> UART
+// ===============================
+//   <o>Baudrate <2400-1125000>
+//   <i> Set the baudrate (speed) of the UART.
+//   <i> Default: 9600
+#ifndef UART_BAUDRATE
+ #define UART_BAUDRATE        9600
+#endif
 
 
 //------------- <<< end of configuration section >>> -----------------------

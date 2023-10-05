@@ -17,34 +17,27 @@
 #include "platform.h" // Podpora pro zjednodusene pinouty
 #include "chrono.h"
 #include "gpio.h"
+#include "pin.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+#include "config.h"   // Nastaveni projektu
 #include "boards.h"
-#define UART_TX_PIN    io_pin(UART_TX)
-#define UART_TX_PORT   io_port(UART_TX)
-#define UART_RX_PIN    io_pin(UART_RX)
-#define UART_RX_PORT   io_port(UART_RX)
 
 INLINE_STM32 void UART_TX_Setup(enum pin pin) {
-    GPIO_clock_enable(pin);
-
-    MODIFY_REG(io_port(pin)->MODER,   (3UL  << (2 * io_pin(pin))),  (2UL << 2 * io_pin(pin)));  // AF mode
-     CLEAR_BIT(io_port(pin)->OTYPER,  (1UL  << (1 * io_pin(pin))));                             // Push-pull
-    MODIFY_REG(io_port(pin)->OSPEEDR, (3UL  << (2 * io_pin(pin))),  (3UL << 2 * io_pin(pin)));  // Very high speed
-    MODIFY_REG(io_port(pin)->AFR[0],  (15UL << (4 * io_pin(pin))),  (7UL << 4 * io_pin(pin)));  // AF7 - UART
+    pin_enable(pin);
+    pin_setup_af(pin, PIN_MODE_AF, PIN_PULL_DEFAULT, PIN_SPEED_VERYHIGH, PIN_TYPE_PUSHPULL, PIN_AF7); // AF7 - UART
 }
 
 INLINE_STM32 void UART_RX_Setup(enum pin pin) {
-    GPIO_clock_enable(pin);
-
-    MODIFY_REG(io_port(pin)->MODER,   (3UL << (2 * io_pin(pin))), (2UL << 2 * io_pin(pin)));   // AF mode
-    MODIFY_REG(io_port(pin)->AFR[0], (15UL << (4 * io_pin(pin))), (7UL << 4 * io_pin(pin)));   // AF7 - UART
+    pin_enable(pin);
+    pin_mode(pin, PIN_MODE_AF);
+    pin_af(pin, PIN_AF7); // AF7 - UART
 }
 
-INLINE_STM32 uint32_t UART_baudrate_calculate(int pclk, int desired_rate, int over8) {
+CONSTEXPR uint32_t UART_baudrate_calculate(int pclk, int desired_rate, int over8) {
     const uint32_t div_sampling = (pclk * 25) / ((2 + 2 * (!!!over8)) * desired_rate);
     const uint32_t mantissa = div_sampling / 100;
     const uint32_t fraction = ((div_sampling - mantissa * 100) * 16 + 50) / 100;
@@ -62,7 +55,7 @@ INLINE_STM32 void UART_setup(void) {
 
     RCC->APB1ENR |= RCC_APB1ENR_USART2EN;
 
-    USART2->BRR |= UART_baudrate_calculate(SystemCoreClock, 9600, 0);
+    USART2->BRR |= UART_baudrate_calculate(SystemCoreClock, UART_BAUDRATE, 0);
     USART2->CR1 |= USART_CR1_TE | USART_CR1_RE; // Enable Tx & Rx
     USART2->CR1 |= USART_CR1_UE; // USART Enable
 }
@@ -101,7 +94,7 @@ INLINE_STM32 int UART_read(void *__restrict buf, size_t len) {
         chr = UART_getc();
         *str = chr;
         if (*str == '\0') break;
-		if (*str == '\r') break;
+        if (*str == '\r') break;
         str++;
         alen++;
     }
