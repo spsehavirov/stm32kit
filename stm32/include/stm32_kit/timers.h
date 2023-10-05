@@ -76,8 +76,7 @@ extern "C" {
  * @brief  Pocatecni inicializace casovace.
  *
  */
-void TIM6_setup(void)
-{
+void TIM6_setup(void) {
   RCC->TIM6_APB |=  TIM6_RST; // Reset
   RCC->TIM6_APB &= ~TIM6_RST; //  casovace
   RCC->TIM6_APB |=  TIM6_EN;  // Povoleni CLK pro casovac (vsechny periferie potrebuji mit povoleny hodiny pro svuj beh).
@@ -88,8 +87,7 @@ void TIM6_setup(void)
  *         Funkce nemusi byt pouzita, pak budou casovace v defaultnim stavu.
  *
  */
-void TIM6_config(void)
-{
+void TIM6_config(void) {
   TIM6->PSC = TIMx_PSC;                       // Prescaler - delicka vstupni frekvence (hodinoveho signalu)
                                               // Pro f =  16MHz zakomentovat radek      ; Pretece za 4.1ms
                                               // Pro f =   2MHz zadat:   8              ; Pretece za 32.768ms
@@ -111,13 +109,11 @@ void TIM6_config(void)
  * @brief  Casova funkce pro pozdrzeni provadeneho programu.
  *
  */
-void TIM6_delay(void)
-{
+void TIM6_delay(void) {
   TIM6->SR &= ~(TIM_SR_UIF);                  // Nulovani priznaku preteceni casovace.
                                               // Status bit nutno nastavit na log. 0! ; Pri preteceni nebo dosazeni hodnoty Auto-reload hodnoty nastaven HW do log. 1!
 
-  TIM6->CNT = TIMx_CNT;                       // Prednastavena hodnota od ktere zacne pricitani.
-
+  TIM6->CNT  = TIMx_CNT;                      // Prednastavena hodnota od ktere zacne pricitani.
   TIM6->CR1 |= TIM_CR1_CEN;                   // Spusteni casovace.
 
 	while (!(TIM6->SR & TIM_SR_UIF))  {         // Kontrola, zda doslo k preteceni citace (UIF = Update Interrupt Flag).
