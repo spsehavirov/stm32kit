@@ -14,6 +14,7 @@
 #include "platform.h" /* Podpora pro desky */
 #include "chrono.h"   /* Podpora pro casovani a delay smycky */
 #include "gpio.h"     /* Podpora pro zjednodusene pinovani */
+#include "pin.h"
 
 #include "boards.h"
 #define ADC_1_PIN    io_pin(ADC_1)
@@ -34,11 +35,12 @@ extern "C" {
  */
 void ADC_setup(void) {
   __disable_irq();
-  GPIO_clock_enable(ADC_1);
+  pin_enable(ADC_1);
+  pin_mode(ADC_1, PIN_MODE_ANALOG); // Analog mode
+  
   RCC->APB2ENR |= 0x00000100; // Enable ADC clock
-  MODIFY_REG(ADC_1_PORT->MODER, 3UL << (2 * ADC_1_PIN), 3UL << (2 * ADC_1_PIN)); // Analog mode
-
   MODIFY_REG(ADC1->SMPR2, 7UL << (3 * 1), 7UL << (3 * 1)); // Set sampling to 111 - 480 cycles
+  
   ADC1->CR2  = 0;
   ADC1->SQR3 = 1; // Convert on channel 1
   ADC1->CR2  = 1;
