@@ -55,19 +55,15 @@ extern "C" {
 
 // <h> Keypad
 // ===============================
-//   <o>KEYPAD COLS <1=>   1  
-//                  <2=>   2
-//                  <3=>   3
+//   <o>KEYPAD COLS <3=>   3
 //                  <4=>   4
 //   <i> Number of the buttons on KEYPAD line.
 //   <i> Default: 4
 #ifndef KEYPAD_COLS
- #define KEYPAD_COLS      4
+ #define KEYPAD_COLS      3
 #endif
 
-//   <o>KEYPAD ROWS <1=>   1  
-//                  <2=>   2
-//                  <3=>   3
+//   <o>KEYPAD ROWS <3=>   3
 //                  <4=>   4
 //   <i> Number of the lines in the Keypad.
 //   <i> Default: 4 rows
@@ -79,19 +75,19 @@ extern "C" {
 //   <i> Set the delay for antialiasing the keypad.
 //   <i> Default: 100
 #ifndef KEYPAD_STEP
- #define KEYPAD_STEP        100
+ #define KEYPAD_STEP        150
 #endif
 
 
 //------------- <<< end of configuration section >>> -----------------------
 
-
-static uint8_t KeyPad_KeyMap[KEYPAD_ROWS][KEYPAD_COLS] = {      // Defaultni rozlozeni pro 4x4 KeyPad
+// Defaultni rozlozeni pro 4x4 KeyPad
+/*static uint8_t KeyPad_KeyMap[KEYPAD_ROWS][KEYPAD_COLS] = {
 		'1', '2', '3', 'A',
 		'4', '5', '6', 'B',
 		'7', '8', '9', 'C',
 		'*', '0', '#', 'D'
-};
+};*/
 
 #ifdef __cplusplus
 }

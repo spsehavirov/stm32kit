@@ -2,6 +2,10 @@
 
 ## [next]:
 
+
+## [2.2.0] 2023-10-04:
+- `Fix`: Keypad modes not reacting correctly with 3x4 or 4x3
+
 ## [2.1.0] 2023-09-21:
 - `Add`: Adding `pin.h` to simplify the pin setup
 - `Mod`: Editing the drivers to support new pin.h header

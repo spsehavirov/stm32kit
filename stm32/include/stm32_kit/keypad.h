@@ -40,30 +40,18 @@ static uint8_t KBD_MAP[KEYPAD_ROWS][KEYPAD_COLS];
 #endif
 
 const enum pin KBD_rows[] = {
-#if KEYPAD_ROWS >= 1
     KEYPAD_R0,
-#endif
-#if KEYPAD_ROWS >= 2
     KEYPAD_R1,
-#endif
-#if KEYPAD_ROWS >= 3
     KEYPAD_R2,
-#endif
 #if KEYPAD_ROWS >= 4
     KEYPAD_R3,
 #endif
     P_INVALID
 };
 const enum pin KBD_cols[] = {
-#if KEYPAD_COLS >= 1
     KEYPAD_C0,
-#endif
-#if KEYPAD_COLS >= 2
     KEYPAD_C1,
-#endif
-#if KEYPAD_COLS >= 3
     KEYPAD_C2,
-#endif
 #if KEYPAD_COLS >= 4
     KEYPAD_C3,
 #endif
@@ -71,37 +59,35 @@ const enum pin KBD_cols[] = {
 };
 
 INLINE_STM32 uint16_t KBD_read_wires(void) {
-  uint16_t tmp; // Pomocna promenna, ve ktere muze byt uchovana hodnota stisknute klavesy.
-
-  tmp = ((READ_BIT(io_port(KEYPAD_R0)->ODR, (1UL << io_pin(KEYPAD_R0))) >> io_pin(KEYPAD_R0)) << 4) | // Vymaskovani radku
-        ((READ_BIT(io_port(KEYPAD_R1)->ODR, (1UL << io_pin(KEYPAD_R1))) >> io_pin(KEYPAD_R1)) << 5) |
-        ((READ_BIT(io_port(KEYPAD_R2)->ODR, (1UL << io_pin(KEYPAD_R2))) >> io_pin(KEYPAD_R2)) << 6) 
-#if KEYPAD_ROWS >= 4
-      | ((READ_BIT(io_port(KEYPAD_R3)->ODR, (1UL << io_pin(KEYPAD_R3))) >> io_pin(KEYPAD_R3)) << 7)
+  uint16_t tmp = 0; // Pomocna promenna, ve ktere muze byt uchovana hodnota stisknute klavesy.
+ 
+  tmp |= (io_get(KEYPAD_R0) << 4)
+      |  (io_get(KEYPAD_R1) << 5)
+      |  (io_get(KEYPAD_R2) << 6)
+#if KEYPAD_ROWS > 3
+      |  (io_get(KEYPAD_R3) << 7)
+#else
+      |  (1 << 7)
 #endif
       ;
-
-  tmp |= ((READ_BIT(io_port(KEYPAD_C0)->IDR, (1UL << io_pin(KEYPAD_C0))) >> io_pin(KEYPAD_C0)) << 0) | // Vymaskovani sloupcu
-         ((READ_BIT(io_port(KEYPAD_C1)->IDR, (1UL << io_pin(KEYPAD_C1))) >> io_pin(KEYPAD_C1)) << 1) |
-         ((READ_BIT(io_port(KEYPAD_C2)->IDR, (1UL << io_pin(KEYPAD_C2))) >> io_pin(KEYPAD_C2)) << 2)
-#if KEYPAD_COLS >= 4  
-       | ((READ_BIT(io_port(KEYPAD_C3)->IDR, (1UL << io_pin(KEYPAD_C3))) >> io_pin(KEYPAD_C3)) << 3)
+   
+  tmp |= (io_read(KEYPAD_C0) << 0) // Vymaskovani sloupcu
+      |  (io_read(KEYPAD_C1) << 1)
+      |  (io_read(KEYPAD_C2) << 2)
+#if KEYPAD_COLS > 3    
+      |  (io_read(KEYPAD_C3) << 3)
+#else
+      |  (1 << 3)
 #endif
-       ;
+      ;
 
   return tmp;
 }
 
 INLINE_STM32 void KBD_activateRow(int row) {
-#if KEYPAD_ROWS >= 1
     io_set(KBD_rows[0], 0 != row);
-#endif
-#if KEYPAD_ROWS >= 2
     io_set(KBD_rows[1], 1 != row);
-#endif
-#if KEYPAD_ROWS >= 3
     io_set(KBD_rows[2], 2 != row);
-#endif
 #if KEYPAD_ROWS >= 4
     io_set(KBD_rows[3], 3 != row);
 #endif
@@ -124,27 +110,19 @@ INLINE_STM32 int KBD_wireValueForRow(int row) {
  *          jinak prislusny znak, dle zadefinovaneho rozlozeni pro KeyPad.
  */
 uint8_t KBD_findKeyInRow(uint16_t value, int row, int *error) {
-  // pin & (0x0F) // lower
-  // (pin & (0xF0)) >> 4; // Get Upper part
-  
   if (((value & 0xF0) >> 4) != KBD_wireValueForRow(row)) {
     *error = -1; // Not in this row
     return 0;
   }
 
   *error = 0; // No error if we find something
-  switch (value & 0x0F) // Kontrola, zda nebylo stisknuto tlacitko ve vybranem radku a sloupci
-  {
-#if KEYPAD_COLS >= 1
+  // Kontrola, zda nebylo stisknuto tlacitko ve vybranem radku a sloupci
+  int test = value & 0x0F;
+  switch (test) {
     case 0xE: return KBD_MAP[row][0];
-#endif
-#if KEYPAD_COLS >= 2
     case 0xD: return KBD_MAP[row][1];
-#endif
-#if KEYPAD_COLS >= 3
     case 0xB: return KBD_MAP[row][2];
-#endif
-#if KEYPAD_COLS >= 4
+#if KEYPAD_COLS > 3
     case 0x7: return KBD_MAP[row][3];
 #endif
   }
@@ -164,10 +142,12 @@ uint8_t KBD_read(void) {
 
   int err;
   uint8_t key;
+  uint16_t wires;
   
-  for (int row; row < KEYPAD_ROWS; row++) {
+  for (int row = 0; row < KEYPAD_ROWS; row++) {
     KBD_activateRow(row); // Aktivace radku n-teho radku a deaktivace zbylych radku
-    key = KBD_findKeyInRow(KBD_read_wires(), row, &err);
+    wires = KBD_read_wires();
+    key = KBD_findKeyInRow(wires, row, &err);
     if (err == 0) return key;
   }
 

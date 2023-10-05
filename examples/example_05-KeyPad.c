@@ -39,24 +39,24 @@
 
 #ifndef KEYPAD_STYLE
   static uint8_t KBD_MAP[KEYPAD_ROWS][KEYPAD_COLS] = {      // Defaultni rozlozeni pro 4x4 KeyPad
-                            '1', '2', '3', 'A',
-                            '4', '5', '6', 'B',
-                            '7', '8', '9', 'C',
-                            '*', '0', '#', 'D'
+    '1', '2', '3',// 'A',
+    '4', '5', '6',// 'B',
+    '7', '8', '9',// 'C',
+    '*', '0', '#',// 'D'
   };
 #elif (KEYPAD_STYLE == 1)
   static uint8_t KBD_MAP[KEYPAD_ROWS][KEYPAD_COLS] = {      // Alternativni rozlozeni pro 4x4 KeyPad
-                            'a', 'b', 'c', 'd',
-                            'e', 'f', 'g', 'h',
-                            'i', 'j', 'k', 'l',
-                            'm', 'n', 'o', 'p'
+    'a', 'b', 'c', 'd',
+    'e', 'f', 'g', 'h',
+    'i', 'j', 'k', 'l',
+    'm', 'n', 'o', 'p'
   };
 #elif (KEYPAD_STYLE == 2)
   static uint8_t KBD_MAP[KEYPAD_ROWS][KEYPAD_COLS] = {      // Alternativni rozlozeni pro 4x4 KeyPad
-                            'q', 'r', 's', 't',
-                            'u', 'v', 'w', 'x',
-                            'y', 'z', '[', ']',
-                            '.', ',', '-', '='
+    'q', 'r', 's', 't',
+    'u', 'v', 'w', 'x',
+    'y', 'z', '[', ']',
+    '.', ',', '-', '='
   };
 #endif
   
@@ -104,7 +104,7 @@ int main(void) {
     LCD_set(LCD_LINE2);
     LCD_print(line2);
 
-    delay_ms(STEP);
+    delay_ms(500);
 
     LCD_set(LCD_CLR);
     LCD_set(LCD_LINE1);
