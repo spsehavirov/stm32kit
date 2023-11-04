@@ -41,6 +41,9 @@
  *                  ROW1    PD7
  *                  ROW2    PD8
  *                  ROW3    PD9
+ *			I2C:
+ *									SDA			PB7
+ *									SCL			PB6
  *
  * @date       2023-03-29
  * @copyright  Copyright SPSE Havirov (c) 2023
@@ -89,5 +92,9 @@
 /* UART setup */
 #   define UART_TX      (PA2)
 #   define UART_RX      (PA3)
+
+/* I2C1 setup*/
+#   define I2C1_SDA     (PB7)
+#   define I2C1_SCL     (PB6)
 
 #endif /* STM32_KIT_BOARDS_F407 */
