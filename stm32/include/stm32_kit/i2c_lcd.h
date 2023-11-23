@@ -59,9 +59,9 @@ void I2C1_setup(){
 	I2C1->CR1 &= ~I2C_CR1_SWRST;
 	
 	// neni duvod optimalizovat, bezi pouze jednou
-	I2C1->CR2 |= (SystemCoreClock / 1000000) & I2C_CR2_FREQ_Msk;
-	I2C1->CCR |= (uint16_t)((1.0/I2C_FREQ * I2C_DUTY) / (1.0 / SystemCoreClock)) & I2C_CCR_CCR_Msk;
-	I2C1->TRISE |= (uint16_t)(I2C_RISE / (1.0 / SystemCoreClock)) & I2C_TRISE_TRISE_Msk;
+	I2C1->CR2 |= (SystemCoreClock / 1000000) & I2C_CR2_FREQ;
+	I2C1->CCR |= (uint16_t)((1.0/I2C_FREQ * I2C_DUTY) / (1.0 / SystemCoreClock)) & I2C_CCR_CCR;
+	I2C1->TRISE |= (uint16_t)(I2C_RISE / (1.0 / SystemCoreClock)) & I2C_TRISE_TRISE;
 	
 	I2C1->CR1 |= I2C_CR1_PE;
 	
@@ -124,6 +124,16 @@ void I2C_LCD_set(uint8_t cmd){
 	//io_set(LED_IN_2, 0);	// status
 }
 
+void I2C_LCD_set_fast(uint8_t cmd){
+	I2C1_write((cmd & 0xF0) | 0x0C);
+	//delay_us(1);
+	I2C1_write((cmd & 0xF0) | 0x08);
+	
+	I2C1_write((cmd << 4) | 0x0C);
+	//delay_us(1);
+	I2C1_write((cmd << 4) | 0x08);
+}
+
 // Vypise znak na LCD
 void I2C_LCD_symbol(uint8_t data){
 	if(!I2C_LCD_addr){
@@ -148,6 +158,16 @@ void I2C_LCD_symbol(uint8_t data){
 	//io_set(LED_IN_2, 0);	// status
 }
 
+void I2C_LCD_symbol_fast(uint8_t cmd){
+	I2C1_write((cmd & 0xF0) | 0x0D);
+	//delay_us(1);
+	I2C1_write((cmd & 0xF0) | 0x09);
+	
+	I2C1_write((cmd << 4) | 0x0D);
+	//delay_us(1);
+	I2C1_write((cmd << 4) | 0x09);
+}
+
 // Nastavi a popr. najde LCD
 void I2C_LCD_setup(){
 	I2C1_setup();
@@ -168,6 +188,29 @@ void I2C_LCD_setup(){
 	I2C_LCD_set(0x01);
 }
 
+void I2C_LCD_setup_fast(){
+	I2C1_setup();
+	if(!I2C_LCD_addr){
+		I2C1_find_device();
+	}
+	if(!I2C_LCD_addr){
+		return;
+	}
+	
+	I2C1_start();
+	I2C1_send_addr(I2C_LCD_addr);
+	
+	I2C_LCD_set_fast(0x3);
+	I2C_LCD_set_fast(0x3);
+	I2C_LCD_set_fast(0x2);
+	
+	I2C_LCD_set_fast(0x28);
+	I2C_LCD_set_fast(0x0F);
+	I2C_LCD_set_fast(0x06);
+	I2C_LCD_set_fast(0x01);
+	delay_us(10);
+}
+
 // Vypise adresu LCD
 // Uziti: nastaveni adresy aby se nemuselo LCD hledat
 void I2C_LCD_print_own_addr(){
@@ -178,13 +221,22 @@ void I2C_LCD_print_own_addr(){
 
 // Vypise text na LCD
 void I2C_LCD_print(const char *__restrict__ text){
-  uint8_t i;
+	uint8_t i;
+	
+	for (i = 0; i < strlen(text); i++) {
+		I2C_LCD_symbol(text[i]);
+	}
+}
 
-  for (i = 0; i < strlen(text); i++) {
-    I2C_LCD_symbol(text[i]);
-  }
+void I2C_LCD_print_fast(const char *__restrict__ text){
+	int len = strlen(text);
+	
+	for(int i = 0; i < len; i++){
+		I2C_LCD_symbol_fast(text[i]);
+	}
 }
 
 // user funcs     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 #endif
+
