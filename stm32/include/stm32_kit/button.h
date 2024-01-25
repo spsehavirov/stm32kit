@@ -1,31 +1,15 @@
 /**
   * @file     led.h
-  * @brief    Konfiguracni soubor pro pouzivane LED diody a tlacitko.
+  * @brief    Konfigurační soubor pro použivané LED diody a tlacitko.
   *
-  * @author     Petr Madecki (petr.madecki@spsehavirov.cz)
-  * @author     Tomas Michalek (tomas.michalek@spsehavirov.cz)
+  * @author   SPŠE Havířov (https://github.com/spsehavirov)
+  * @date     2022-04-10
   *
-  *********************************************************************************
-  * @attention
+  *   Otestováno na: F407; F401, G071
   *
-  *   Otestovano na: F407; F401, G071
+  *   Netestováno: F411, L152
   *
-  *   Netestovano: F411, L152
-  *
-  *   Vestavene LED pro domaci pripravek:
-  *       Jelikoz pripravek obsahuje pouze jednu vestavenou LED oproti skolnimu,
-  *         je zapotrebi vestavene LED simulovat - zapojit na nepajivem poli.
-  *       Pouzite piny viz specifikace vyse (vestavene LED (pridane)).
-  *
-  *   Externi LED:
-  *       Dodatecne LED pripojene jak ke skolnimu, tak domacimu pripravku, viz specifikace
-  *       v pinout souboru desky.
-  *
-  *
-  **********************************************************************************
-  *
-  * @date       2022-04-10
-  * @copyright  Copyright SPSE Havirov (c) 2022
+  * @copyright  Copyright SPSE Havirov (c) 2024
   */
 
 #ifndef STM32_KIT_BTN
@@ -34,19 +18,19 @@
 #include "config.h"
 #include "boards.h"
 
-#include "platform.h" /* Podpora pro desky */
-#include "chrono.h"   /* Podpora pro casovani a delay smycky */
-#include "gpio.h"     /* Podpora pro zjednodusene pinovani */
-#include "pin.h"      /* Manipulace s pinem */
+#include "platform.h"
+#include "chrono.h"
+#include "gpio.h"
+#include "pin.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 /**
- * @brief Inicializace uzivatelskeho tlacitka
+ * @brief Inicializace uživatelského tlačítka
  */
-void BTN_setup(void) {
+INLINE_STM32 void BTN_setup(void) {
   __disable_irq();
   
   pin_enable(USER_BUTTON);

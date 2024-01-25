@@ -1,17 +1,16 @@
 /**
  * @file       lcd.h
- * @brief      Driver pro ovladani LCD v primem pripojeni (4bit komunikace).
+ * @brief      Driver pro ovladani LCD v přímém připojení (4bit komunikace).
  *
- * @author     Petr Madecki (petr.madecki@spsehavirov.cz)
- * @author     Tomas Michalek (tomas.michalek@spsehavirov.cz)
- *
+ * @author     SPŠE Havířov (https://github.com/spsehavirov)
  * @date       2023-03-29
- * @copyright  Copyright SPSE Havirov (c) 2022
+ *
+ * @copyright  Copyright SPSE Havirov (c) 2024
  */
 #ifndef STM32_KIT_LCD
 #define STM32_KIT_LCD
 
-#include "platform.h"
+#include  "platform.h"
 #include "chrono.h"
 #include "gpio.h"
 #include "pin.h"
@@ -22,56 +21,52 @@
 
 #	include "boards.h"
 
-//#========================================================================
-//#=== Makra pro LCD - ZACATEK
-
+/**
+ * Makra pro ovládání LCD
+ */
 #ifndef CUSTOM_HD44780_COMMANDS
-# define LCD_ON           (0x0C)      // Zapnuti displeje (bez kurzoru)
+# define LCD_ON           (0x0C)      // Zapnutí displeje (bez kurzoru)
 # define LCD_OFF          (0x08)      // Vypnuti displeje
-# define LCD_CLR          (0x01)      // Smazani displeje a navrat kurzoru na 1. radek a 1. sloupec
-# define LCD_CUR_ON       (0x0E)      // Zapnuti kurzoru bez blikani (vcetne zapnuti displeje)
-# define LCD_CUR_OFF      LCD_ON      // Vypnuti kurzoru (displej zustane zapnuty)
-# define LCD_CUR_BLINK    (0x0F)      // Zapnuti blikajiciho kurzoru (vcetne zapnuti displeje)
-# define LCD_CUR_NO_BLINK LCD_CUR_ON  // Zapnuti blikajiciho kurzoru (vcetne zapnuti displeje)
-# define LCD_CUR_HOME     (0x03)      // Navrat kurzoru na prvni pozici prvniho radku
+# define LCD_CLR          (0x01)      // Smazání displeje a návrat kurzoru na 1. řádek a 1. sloupec
+# define LCD_CUR_ON       (0x0E)      // Zapnutí kurzoru bez blikáni (včetně zapnutí displeje)
+# define LCD_CUR_OFF      LCD_ON      // Vypnutí kurzoru (displej zůstane zapnutý)
+# define LCD_CUR_BLINK    (0x0F)      // Zapnutí blikajícího kurzoru (včetně zapnutí displeje)
+# define LCD_CUR_NO_BLINK LCD_CUR_ON  // Zapnutí blikajícího kurzoru (včetně zapnutí displejee)
+# define LCD_CUR_HOME     (0x03)      // Návrat kurzoru na první pozici prvního řádku
 # define LCD_SL           (0x18)      // Rotace displeje vlevo
 # define LCD_SR           (0x1C)      // Rotace displeje vpravo
-# define LCD_LINE1        (0x80)      // Prvni radek prvni pozice	(0x00 + DDRAM = 0x80)
-# define LCD_LINE2        (0xC0)      // Druhy radek prvni pozice	(0x40 + DDRAM = 0xC0)
-# define LCD_LINE3        (0x94)      // Prvni radek prvni pozice (0x14 + DDRAM = 0x94)
-# define LCD_LINE4        (0xD4)      // Prvni radek prvni pozice (0x54 + DDRAM = 0xD4)
+# define LCD_LINE1        (0x80)      // První řádek, první pozice (0x00 + DDRAM = 0x80)
+# define LCD_LINE2        (0xC0)      // Druhý řádek, první pozice (0x40 + DDRAM = 0xC0)
+# define LCD_LINE3        (0x94)      // Třetí řádek, první pozice (0x14 + DDRAM = 0x94)
+# define LCD_LINE4        (0xD4)      // Čtvrtý řádek, první pozice (0x54 + DDRAM = 0xD4)
 #endif
 
-//#=== Makra pro LCD - KONEC
-//#========================================================================
 
-//#========================================================================
-//#=== Rutiny pro rizeni LCD - ZACATEK
 
 /**
- * @brief  Umele pozdrzeni, pro vykonani instrukce LCD
+ * @brief  Umělé pozdržení, pro vykonání instrukce LCD
  *
  */
-INLINE_STM32 void LCD_busy(void) { delay_us(4); } // 400us; Pokud nebude fungovat spravne, zmenit na 10ms (doba, kdy by mel LCD radic mit prikaz zpracovan a busy flag volny).
+INLINE_STM32 void LCD_busy(void) { delay_us(4); } // 400us; Pokud nebude fungovat správně, změnit na 10ms (doba, kdy by měl LCD řadič mít příkaz zpracován, a busy flag volný).
 
 /**
- * @brief  Zapis nibble informace (vyuziti 4bit komunikace, prikazy jsou vsak 8bit).
+ * @brief  Zápis nibble informace (využití 4bit komunikace, příkazy jsou však 8bit).
  *
- * @param  nibble Hodnota v rozmezi 0 - F.
- *
+ * @param  nibble Hodnota v rozmezí 0 - F.
  */
 INLINE_STM32 void LCD_write_nibble(uint8_t nibble) {
   io_set(LCD_RW, 0);
   io_set(LCD_EN, 0);
-  delay_us(1);       // 100us
+  delay_us(1); // 100us
   io_set(LCD_EN, 1);
 
-  nibble &= 0x0F; // Vymaskovani spodnich 4 bitu ze vstupni hodnoty
-  
-  io_set(LCD_DB4, (nibble & 0x1) >> 0); // Zapis informace
-  io_set(LCD_DB5, (nibble & 0x2) >> 1); //  na prislusne
-  io_set(LCD_DB6, (nibble & 0x4) >> 2); //  piny (zapis
-  io_set(LCD_DB7, (nibble & 0x8) >> 3); //  bit po bitu).
+  nibble &= 0x0F; // Vymaskování spodních 4 bitu ze vstupní hodnoty
+
+  // Zápis informace na příslušné piny (zapis bit po bitu).
+  io_set(LCD_DB4, (nibble & 0x1) >> 0);
+  io_set(LCD_DB5, (nibble & 0x2) >> 1);
+  io_set(LCD_DB6, (nibble & 0x4) >> 2);
+  io_set(LCD_DB7, (nibble & 0x8) >> 3);
 
   delay_us(1);
   io_set(LCD_EN, 0);
@@ -79,20 +74,26 @@ INLINE_STM32 void LCD_write_nibble(uint8_t nibble) {
 }
 
 /**
- * @brief  Funkce pro rizeni/nastaveni LCD.
+ * @brief  Funkce pro řízení/nastavení LCD.
  *
- * @param  cmd Kod pro ridici prikaz.
+ * @param  cmd Kod pro řídící příkaz.
  *
  */
 INLINE_STM32 void LCD_set(uint8_t cmd) {
-  LCD_busy(); // Casova prodleva pro zpracovani ridicich prikazu.
+  LCD_busy(); // Časová prodleva pro zpracování řídících příkazů.
 
   io_set(LCD_RS, 0);
-  LCD_write_nibble(cmd >> 4); // Poslani 4 hornich bitu na zapis
-  LCD_write_nibble(cmd);      // Poslani 4 dolnich bitu na zapis
-  // delay_us(4);                                              // 400us; V pripade potreby odkomentovat.
+  LCD_write_nibble(cmd >> 4); // Posláni 4 hornich bitu na zápis
+  LCD_write_nibble(cmd);      // Posláni 4 dolnich bitu na zápis
+  // delay_us(4);                   // 400us; V připadě potřeby odkomentovat.
 }
 
+/**
+ * @brief Nastavení pinu pro komunikaci s LCD.
+ *
+ * @param pin Pin, který se má nastavit.
+ *
+ */
 INLINE_STM32 void LCD_io_setup(enum pin pin) {
   pin_enable(pin);
   pin_setup(pin, PIN_MODE_OUTPUT, PIN_PULL_DEFAULT, PIN_SPEED_HIGH, PIN_TYPE_PUSHPULL);
@@ -102,17 +103,19 @@ INLINE_STM32 void LCD_io_setup(enum pin pin) {
  * @brief  Funkce pro inicializaci LCD.
  *
  */
-void LCD_setup(void) {
-  // 1. Reseni napajeni (skolni kit) - ZACATEK
-#if (STM32_TYPE == 407) // Pro F407 (skolni pripravek)
-  // Nasledujici radky jsou pouze pro skolni pripravek, u domacich neni nutno zapojovat PE10
+INLINE_STM32 void LCD_setup(void) {
+  /**
+   * Řešení napájení (školné kit)
+   */
+#if (STM32_TYPE == 407) // Pro F407 (školní přípravek); u domácích není nutno zapojovat PE10
   const enum pin pwr = PE10;
   LCD_io_setup(pwr);
-  io_set(pwr, 0); // DIR = 0; Pouzit prevodnik '245 (z 3.3V na 5V a naopak)
+  io_set(pwr, 0); // DIR = 0; Použít převodník '245 (z 3.3V na 5V a naopak)
 #endif
-  // 1. Reseni napajeni (skolni kit) - KONEC
 
-  // 2. Nastaveni pinu a portu - ZACATEK
+  /**
+   * Nastavení pinu a portu
+   */
   __disable_irq();
   LCD_io_setup(LCD_RS);
   LCD_io_setup(LCD_RW);
@@ -122,49 +125,45 @@ void LCD_setup(void) {
   LCD_io_setup(LCD_DB6);
   LCD_io_setup(LCD_DB7);
   __enable_irq();
-  // 2. Nastaveni pinu a portu - KONEC
 
-  // 3. Nastaveni/inicializace LCD - ZACATEK
-  LCD_set(0x3); // 1) Reset LCD
+  /**
+   * Nastavení/inicializace LCD
+   */
+
+  LCD_set(0x3);  // Resetuje LCD
   LCD_set(0x3);
   LCD_set(0x2);
 
-  LCD_set(0x28); // 2) Nastaveni komunikace, poctu radku a rozliseni: 4bit ; 2 radky ; 5x8 bodu
-  LCD_set(0x0F); // 3) Aktivace displeje: zapnuti displeje a blikajiciho kurzoru
-  LCD_set(0x06); // 4) Chovani displeje pri vypisu znaku: inkrementace adresy a posun kurzoru vpravo po vypsani znaku na LCD
-  LCD_set(0x01); // 5) Smazani displeje
-  // 3. Nastaveni/inicializace LCD - KONEC
+  LCD_set(0x28); // Nastavení komunikace, počtu řádku a rozlišení: 4bit ; 2 řádky ; 5x8 bodů
+  LCD_set(0x0F); // Aktivace displeje: zapnutí displeje a blikajícího kurzoru
+  LCD_set(0x06); // Chování displeje při výpisu znaku: inkrementace adresy a posun kurzoru vpravo po vypsání znaku na LCD
+  LCD_set(0x01); // Smazáni displeje
 }
-//#=== Rutiny pro rizeni LCD - KONEC
-//#========================================================================
-
-//#========================================================================
-//#=== Rutiny pro praci s LCD - ZACATEK
 
 /**
- * @brief  Funkce pro vypis 1 znaku na LCD.
+ * @brief  Funkce pro výpis jednoho znaku na LCD.
  *
- * @param  data Kod pro vypisovany znak, pripadne konkretni znak.
+ * @param  data Kód pro vypisovaný znak, případně konkrétní znak.
  *
  */
-void LCD_symbol(uint8_t data)
+INLINE_STM32 void LCD_symbol(uint8_t data)
 {
-  LCD_busy(); // Casova prodleva pro zpracovani ridicich prikazu.
+  LCD_busy(); // Časová prodleva pro zpracování řídících příkazů.
 
   io_set(LCD_RS, 1);
-  LCD_write_nibble(data >> 4);   // Horni 4bity
-  LCD_write_nibble(data & 0x0F); // Dolni 4bity
+  LCD_write_nibble(data >> 4);   // Horní 4bity
+  LCD_write_nibble(data & 0x0F); // Dolní 4bity
 }
 
 /**
- * @brief  Funkce pro vypis retezce znaku na LCD.
- *         Funkce neresi pocet znaku na radek, ani pocet radku, nutno resit v samotnem programu nebo si napsat vl. funkci.
+ * @brief  Funkce pro výpis řetězce znaků na LCD.
  *
- * @param  text Retezec/pole znaku, jez se maji vypsat na LCD.
+ * @warning Funkce neřeší počet znaků na řádek, ani počet řádků, nutno řešit v samotném programu nebo si napsat vl. funkci.
+ *
+ * @param  text Řetezec znaků, jež se mají vypsat na LCD.
  *
  */
-
-void LCD_print(const char *__restrict__ text) {
+INLINE_STM32 void LCD_print(const char *__restrict__ text) {
   uint8_t i;
 
   for (i = 0; i < strlen(text); i++) {
@@ -172,11 +171,15 @@ void LCD_print(const char *__restrict__ text) {
   }
 }
 
-void LCD_goto(int x, int y) {
+/**
+ * @brief Nastavení kurzoru na zadanou pozici.
+ *
+ * @param x Pozice na ose X (Sloupec)
+ * @param y Pozice na ose Y (Řádek)
+ */
+INLINE_STM32 void LCD_goto(int x, int y) {
   const uint8_t row_offset[] = { 0x00, 0x40 };
   LCD_set(0x80 | (x + row_offset[y - 1]));
 }
-//#=== Rutiny pro praci s LCD - KONEC
-//#========================================================================
 
 #endif /* STM32_LCD */
