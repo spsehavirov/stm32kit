@@ -1,19 +1,19 @@
 /**
   * @file       adc.h
-  * @brief      Konfiguracni soubor pro pouzivane LED diody a tlacitko.
+  * @brief      Konfiguračni soubor pro používané LED diody a tlacitko.
   *
-  * @author     Petr Madecki (petr.madecki@spsehavirov.cz)
-  * @author     Tomas Michalek (tomas.michalek@spsehavirov.cz)
+  * @author     SPŠE Havířov (https://github.com/spsehavirov)
+  * @date       2022-04-25
   *
-  * @date       10-April-2022
-  * @copyright  Copyright SPSE Havirov (c) 2022
+  * @copyright  Copyright SPSE Havirov (c) 2024
   */
+
 #ifndef STM32_KIT_ADC
 #define STM32_KIT_ADC
 
-#include "platform.h" /* Podpora pro desky */
-#include "chrono.h"   /* Podpora pro casovani a delay smycky */
-#include "gpio.h"     /* Podpora pro zjednodusene pinovani */
+#include "platform.h"
+#include "chrono.h"
+#include "gpio.h"
 #include "pin.h"
 
 #include "boards.h"
@@ -25,41 +25,40 @@ extern "C" {
 #endif
 
 /**
- *  @brief Initialize Analog-To-Digital converter to single shot mode
+ *  @brief Inicializace ADC převodníku
  *
- *  Setup the ADC1 to work with ADC pin in analog mode in order to read
- *  values from <0-4096> (12b mode). ADC is setup as single-shot on channel 1
- *  with sampling set to 480 cycles (better accuracy).
+ *  Nastaví ADC převodník do analogového módu, aby bylo možné číst hodnoty
+ *  z rozsahu <0-4096> (12b mód). ADC je nastaven jako single-shot na kanál 1
+ *  s vzorkováním 480 cyklů (pro lepší přesnost).
  *
- *  @returns None
  */
-void ADC_setup(void) {
+INLINE_STM32 void ADC_setup(void) {
   __disable_irq();
   pin_enable(ADC_1);
-  pin_mode(ADC_1, PIN_MODE_ANALOG); // Analog mode
+  pin_mode(ADC_1, PIN_MODE_ANALOG); // Analofový mód
   
-  RCC->APB2ENR |= 0x00000100; // Enable ADC clock
-  MODIFY_REG(ADC1->SMPR2, 7UL << (3 * 1), 7UL << (3 * 1)); // Set sampling to 111 - 480 cycles
+  RCC->APB2ENR |= 0x00000100; // Nastaví ADC clock
+  MODIFY_REG(ADC1->SMPR2, 7UL << (3 * 1), 7UL << (3 * 1)); // Nastaví vzorkování na 111 - 480 cyklů
   
   ADC1->CR2  = 0;
-  ADC1->SQR3 = 1; // Convert on channel 1
+  ADC1->SQR3 = 1; // Kanál 1
   ADC1->CR2  = 1;
   __enable_irq();
 }
 
 /**
- *  @brief Read single value from ADC
+ *  @brief Přečte hodnotu z ADC převodníku
  *
- *  Do single pass on AD conversion and return the result. The conversion
- *. ends when the SOC sets Status Register to EOC (end-of-conversion).
+ *  Udělá jedno měření a vrátí výsledek. Převodník končí, když SOC nastaví
+ *  Status Register na EOC (end-of-conversion). Výsledek je uložen v ADC_DR.
  *
- *  @return Read value from ADC
+ *  @return Hodnota z ADC převodníku
  */
-uint16_t ADC_read(void) {
+INLINE_STM32 uint16_t ADC_read(void) {
   ADC1->CR2 |= ADC_CR2_SWSTART;
 
   while (!((ADC1->SR) & ADC_SR_EOC)) {
-    /* Busy-wait for the conversion to happen */
+    // Čeká na dokončení převodu
   }
 
   return ADC1->DR;

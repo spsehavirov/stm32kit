@@ -1,31 +1,15 @@
 /**
   * @file     led.h
-  * @brief    Konfiguracni soubor pro pouzivane LED diody a tlacitko.
+  * @brief    Konfigurační soubor pro použivané LED diody a tlačitko.
   *
-  * @author     Petr Madecki (petr.madecki@spsehavirov.cz)
-  * @author     Tomas Michalek (tomas.michalek@spsehavirov.cz)
-  *
-  *********************************************************************************
-  * @attention
-  *
-  *   Otestovano na: F407; F401, G071
-  *
-  *   Netestovano: F411, L152
-  *
-  *   Vestavene LED pro domaci pripravek:
-  *       Jelikoz pripravek obsahuje pouze jednu vestavenou LED oproti skolnimu,
-  *         je zapotrebi vestavene LED simulovat - zapojit na nepajivem poli.
-  *       Pouzite piny viz specifikace vyse (vestavene LED (pridane)).
-  *
-  *   Externi LED:
-  *       Dodatecne LED pripojene jak ke skolnimu, tak domacimu pripravku, viz specifikace
-  *       v pinout souboru desky.
-  *
-  *
-  **********************************************************************************
-  *
+  * @author     SPŠE Havířov (https://github.com/spsehavirov)
   * @date       2022-04-10
-  * @copyright  Copyright SPSE Havirov (c) 2022
+  *
+  *   Otestovéno na: F407; F401, G071
+  *
+  *   Netestovéno: F411, L152
+  *
+  * @copyright  Copyright SPSE Havirov (c) 2024
   */
 
 #ifndef STM32_KIT_LED
@@ -33,18 +17,18 @@
 
 #include "boards.h"
 
-#include "platform.h" /* Podpora pro desky */
-#include "chrono.h"   /* Podpora pro casovani a delay smycky */
-#include "gpio.h"     /* Podpora pro zjednodusene pinovani */
+#include "platform.h"
+#include "chrono.h"
+#include "gpio.h"
 #include "pin.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-//#============================================================================================================================================
-//#=== Makra pro nastaveni cisel pinu pro uzivatelske tlacitko, vestavene a externi LED - ZACATEK
-
+/**
+ * Makra pro nastevní čísel pinů pro uživatelské tlačítko, vestavěné a externí LED.
+ */
 #define LED_IN_0_PIN    io_pin(LED_IN_0)
 #define LED_IN_0_PORT   io_port(LED_IN_0)
 #define LED_IN_1_PIN    io_pin(LED_IN_1)
@@ -63,17 +47,18 @@ extern "C" {
 #define LED_EX_3_PORT   io_port(LED_EX_3)
 
 /**
- * @brief  Defaultni inicializace pro vybrany typ desky (skolni nebo domaci).
- *         Aktivace portu pro vestavenou(e) LED a uzivatelske tlacitko, vcetne nastaveni smeru pinu na nich.
- *         Vyuzito (nejen) pro otestovani pripravku.
+ * @brief  Defaultni inicializace pro vybraný typ desky.
+ *
+ *  Aktivace portu pro vestavěnou(e) LED a uživatelské tlačítko, včetně nastavení směru pinu.
+ *  Využito (nejen) pro otestování přípravků.
  *
  */
-void LED_setup(void) {
+INLINE_STM32 void LED_setup(void) {
   __disable_irq();
-  // Pro vestavene LED
-  // Nejdrive Aktivace CLK na portu
-  // Pak vynulovani MODERu pro dany pin (input mod)
-  // A nasledne nastaveni smeru pinu (output mod)
+  // Pro vestavěné LED
+  // Nejdříve aktivace CLK na portu.
+  // Pak vynulováni MODERu pro daný pin (input mod)
+  // A následné nastavení směru pinu (output mod)
   pin_enable(LED_IN_0);
   pin_enable(LED_IN_1);
   pin_enable(LED_IN_2);
@@ -84,10 +69,10 @@ void LED_setup(void) {
   pin_mode(LED_IN_2, PIN_MODE_OUTPUT);
   pin_mode(LED_IN_3, PIN_MODE_OUTPUT);
 
-  // Pro externi LED
-  // Nejdrive Aktivace CLK na portu
-  // Pak vynulovani MODERu pro dany pin (input mod)
-  // A nasledne nastaveni smeru pinu (output mod)
+  // Pro externí LED
+  // Nejdříve aktivace CLK na portu.
+  // Pak vynulování MODERu pro daný pin (input mod)
+  // A nasledné nastavení směru pinu (output mod)
   pin_enable(LED_EX_0);
   pin_enable(LED_EX_1);
   pin_enable(LED_EX_2);
@@ -98,7 +83,7 @@ void LED_setup(void) {
   pin_mode(LED_EX_2, PIN_MODE_OUTPUT);
   pin_mode(LED_EX_3, PIN_MODE_OUTPUT);
 
-  // Zhasnuti externich LED (sviti v log. 0)
+  // Zhasnutí externích LED (svítí v log. 0)
   io_set(LED_EX_0, 1);
   io_set(LED_EX_1, 1);
   io_set(LED_EX_2, 1);

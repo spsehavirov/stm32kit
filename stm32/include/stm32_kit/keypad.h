@@ -1,43 +1,44 @@
 /**
- ************************************************************************
- * @file     keypad.h
- * @author   SPSE Havirov
- * @version  1.5.8
- * @date     10-April-2022 [v1.0]
- * @brief    Driver pro ovladani LCD v primem pripojeni (4bit komunikace).
- *
- ************************************************************************
- * @attention
- *
- * Otestovano na: F407; F401, G071
- *
- * Netestovano: F411, L152
- *
- ************************************************************************
- */
+  * @file     keypad.h
+  * @brief    Driver pro ovladani KeyPadu.
+  *
+  * @author   SPŠE Havířov (https://github.com/spsehavirov)
+  * @date     2022-04-10
+  *
+  * Otestováno na: F407; F401, G071
+  *
+  * Netestováno: F411, L152
+  *
+  * @copyright  Copyright SPSE Havirov (c) 2024
+  */
 #ifndef STM32_KIT_KEYPAD
 #define STM32_KIT_KEYPAD
 
-#include "platform.h" // Podpora pro zjednodusene pinouty
+#include "platform.h"
 #include "chrono.h"
 #include "gpio.h"
 #include "pin.h"
 
-#include "config.h"   // Nastaveni projektu
-#include "boards.h"   // Piny ktere budeme pouzivat
+#include "config.h"
+#include "boards.h"
 
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#ifndef KEYPAD_STEP // Prodleva mezi dalsim snimanim klaves
-# define KEYPAD_STEP 100
+#ifndef KEYPAD_STEP
+    #define KEYPAD_STEP 100 // Prodleva mezi dalším snímaním kláves
 #endif
 
-#ifndef KBD_MAP // V pripade, ze nebude definovano pole pro rozlozeni KeyPad, definuje se
+#ifndef KBD_MAP
+// V případě, že nebude definováno pole pro rozložení KeyPadu, definuje se
 static uint8_t KBD_MAP[KEYPAD_ROWS][KEYPAD_COLS];
 #endif
+
+/**
+ * Globalní proměnné
+ */
 
 const enum pin KBD_rows[] = {
     KEYPAD_R0,
@@ -48,6 +49,7 @@ const enum pin KBD_rows[] = {
 #endif
     P_INVALID
 };
+
 const enum pin KBD_cols[] = {
     KEYPAD_C0,
     KEYPAD_C1,
@@ -58,8 +60,14 @@ const enum pin KBD_cols[] = {
     P_INVALID
 };
 
+
+/**
+ * @brief  Funkce pro ziskani hodnoty z pinu
+ *
+ * @return Vraci hodnotu z pinu.
+ */
 INLINE_STM32 uint16_t KBD_read_wires(void) {
-  uint16_t tmp = 0; // Pomocna promenna, ve ktere muze byt uchovana hodnota stisknute klavesy.
+  uint16_t tmp = 0; // Pomocná proměnná, ve které může být uchována hodnota stisknuté klávesy.
  
   tmp |= (io_get(KEYPAD_R0) << 4)
       |  (io_get(KEYPAD_R1) << 5)
@@ -71,7 +79,7 @@ INLINE_STM32 uint16_t KBD_read_wires(void) {
 #endif
       ;
    
-  tmp |= (io_read(KEYPAD_C0) << 0) // Vymaskovani sloupcu
+  tmp |= (io_read(KEYPAD_C0) << 0) // Vymaskováni sloupců
       |  (io_read(KEYPAD_C1) << 1)
       |  (io_read(KEYPAD_C2) << 2)
 #if KEYPAD_COLS > 3    
@@ -84,6 +92,11 @@ INLINE_STM32 uint16_t KBD_read_wires(void) {
   return tmp;
 }
 
+/**
+ * @brief  Funkce pro aktivaci řádku KeyPadu
+ *
+ * @param  row Číslo řádku
+ */
 INLINE_STM32 void KBD_activateRow(int row) {
     io_set(KBD_rows[0], 0 != row);
     io_set(KBD_rows[1], 1 != row);
@@ -93,6 +106,11 @@ INLINE_STM32 void KBD_activateRow(int row) {
 #endif
 }
 
+/**
+ * @brief  Funkce pro získání hodnoty, která je nastavená pro daný řádek
+ *
+ * @param row  Číslo řádku
+ */
 INLINE_STM32 int KBD_wireValueForRow(int row) {
   switch (row) {
     case 0: return 0xE; // 0x1110
@@ -104,19 +122,18 @@ INLINE_STM32 int KBD_wireValueForRow(int row) {
 }
 
 /**
- * @brief  Funkce pro zisteni hodnoty, vybrane v radku
+ * @brief   Funkce pro zjištění vybrané hodnoty v řádku
  *
- * @return  Pokud neni stisknuta zadna klavesa vraci 0 (s nastavenim chyby),
- *          jinak prislusny znak, dle zadefinovaneho rozlozeni pro KeyPad.
+ * @note    Pokud není stisknutá žadná klávesa, vrací 0, jinak příslušný znak, dle zadefinovaného rozložení pro KeyPad.
  */
-uint8_t KBD_findKeyInRow(uint16_t value, int row, int *error) {
+INLINE_STM32 uint8_t KBD_findKeyInRow(uint16_t value, int row, int *error) {
   if (((value & 0xF0) >> 4) != KBD_wireValueForRow(row)) {
-    *error = -1; // Not in this row
+    *error = -1;  // Nenalezeno v daném řádku
     return 0;
   }
 
-  *error = 0; // No error if we find something
-  // Kontrola, zda nebylo stisknuto tlacitko ve vybranem radku a sloupci
+  *error = 0; // Chyba nenastala, klávesa nalezena
+  // Kontrola, zda nebylo stisknuto tlačítko ve vybraném řádku a sloupci
   int test = value & 0x0F;
   switch (test) {
     case 0xE: return KBD_MAP[row][0];
@@ -127,17 +144,17 @@ uint8_t KBD_findKeyInRow(uint16_t value, int row, int *error) {
 #endif
   }
   
-  *error = -2; // Not found
+  *error = -2; // Nenalezeno
   return 0;
 }
 
 /**
- * @brief  Funkce pro zisteni stisknute klavesy.
+ * @brief  Funkce pro zjištění hodnoty stisknuté klávesy
  *
- * @return  Pokud neni stisknuta zadna klavesa vraci 0, jinak prislusny znak, dle zadefinovaneho rozlozeni pro KeyPad.
+ * @note  Pokud není stisknutá žadná klávesa, vrací 0, jinak příslušný znak, dle zadefinovaného rozložení pro KeyPad.
  */
 
-uint8_t KBD_read(void) {
+INLINE_STM32 uint8_t KBD_read(void) {
   delay_ms(KEYPAD_STEP);
 
   int err;
@@ -145,7 +162,7 @@ uint8_t KBD_read(void) {
   uint16_t wires;
   
   for (int row = 0; row < KEYPAD_ROWS; row++) {
-    KBD_activateRow(row); // Aktivace radku n-teho radku a deaktivace zbylych radku
+    KBD_activateRow(row); // Aktivace řádku n-tého řádku a deaktivace zbylých řádků
     wires = KBD_read_wires();
     key = KBD_findKeyInRow(wires, row, &err);
     if (err == 0) return key;
@@ -155,10 +172,10 @@ uint8_t KBD_read(void) {
 }
 
 /**
- * @brief  Pocatecni inicializace pro KeyPad
+ * @brief  Počateční inicializace pro KeyPad
  *
  */
-void KBD_setup(void) {
+INLINE_STM32 void KBD_setup(void) {
   __disable_irq();
 
   for (int i = 0; KBD_cols[i] != P_INVALID; i++) {
