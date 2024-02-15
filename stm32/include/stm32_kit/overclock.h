@@ -1,3 +1,5 @@
+#ifndef STM32_KIT_OVERCLOCK
+#define STM32_KIT_OVERCLOCK
 
 #include "stm32_kit.h"
 #define HSE_VALUE = 8000000
@@ -47,3 +49,5 @@ void clock168Mhz(){
 	
 	SystemCoreClockUpdate();
 }
+
+#endif
