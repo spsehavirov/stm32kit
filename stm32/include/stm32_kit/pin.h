@@ -1,16 +1,36 @@
+/**
+  y @file     led.h
+  * @brief    Soubor pro prácí s pinem.
+  *
+  * @author   SPŠE Havířov (https://github.com/spsehavirov)
+  * @date     2024-01-25
+  *
+  * @copyright  Copyright SPSE Havirov (c) 2024
+  */
+
 #ifndef STM32_KIT_PIN
 #define STM32_KIT_PIN
 
-#include "config.h"   // Nastaveni projektu
+#include "config.h"
 
-#include "platform.h" // Podpora pro zjednodusene pinouty
+#include "platform.h"
 #include "chrono.h"
 #include "gpio.h"
 
+/**
+ * @brief  Aktivuje pin na desce.
+ *
+ * @param pin Pin, který chceme aktivovat.
+ */
 INLINE_STM32 void pin_enable(enum pin pin) {
   SET_BIT(RCC->IO_ENABLE, (1UL << io_port_source(io_port(pin))));
 }
 
+/*
+ * @brief  Deaktivuje pin na desce.
+ *
+ * @param pin Pin, který chceme deaktivovat.
+ */
 INLINE_STM32 void pin_disable(enum pin pin) {
   CLEAR_BIT(RCC->IO_ENABLE, (1UL << io_port_source(io_port(pin))));
 }
@@ -70,26 +90,53 @@ typedef enum {
   PIN_AF_MASK = 15UL
 } pin_af_t;
 
+/**
+ * @brief  Nastaví mód pinu.
+ *
+ * @param pin Pin, který chceme nastavit.
+ * @param mode Jakým typem bude pin nastaven (input, output, analog, ...).
+ */
 INLINE_STM32 void pin_mode(enum pin pin, pin_mode_t mode) {
   if (PIN_MODE_DEFAULT == mode) return;
   MODIFY_REG(io_port(pin)->MODER, (PIN_MODE_MASK << (2 * io_pin(pin))), (mode << 2 * io_pin(pin)));
 }
 
+/**
+ * @brief  Nastaví pull pinu, neboli připojení rezistoru.
+ *
+ * @param pin Pin, který chceme nastavit.
+ * @param pull Jaký pull chceme? (none, up, down),
+ */
 INLINE_STM32 void pin_pull(enum pin pin, pin_pull_t pull) {
   if (PIN_PULL_DEFAULT == pull) return;
   MODIFY_REG(io_port(pin)->PUPDR, (PIN_PULL_MASK << (2 * io_pin(pin))), (pull << 2 * io_pin(pin)));
 }
 
+/**
+ * @brief  Nastaví rychlost pinu.
+ *
+ * @param pin Pin, který chceme nastavit.
+ * @param speed Rychlost, kterou chceme nastavit (low, mid, high, very high).
+ */
 INLINE_STM32 void pin_output_speed(enum pin pin, pin_speed_t speed) {
   if (PIN_SPEED_DEFAULT == speed) return;
   MODIFY_REG(io_port(pin)->OSPEEDR, (PIN_SPEED_MASK << (2 * io_pin(pin))), (speed << 2 * io_pin(pin)));
 }
 
+/**
+ * @brief  Nastaví typ pinu.
+ *
+ * @param pin Pin, který chceme nastavit.
+ * @param type Typ, který chceme nastavit (push-pull, open-drain).
+ */
 INLINE_STM32 void pin_output_type(enum pin pin, pin_type_t type) {
   if (PIN_TYPE_DEFAULT == type) return;
   MODIFY_REG(io_port(pin)->OTYPER, (PIN_TYPE_MASK << (io_pin(pin))), (type << io_pin(pin)));
 }
 
+/**
+ * TODO: Dokumentace
+ */
 INLINE_STM32 void pin_af(enum pin pin, pin_af_t func) {
   if (PIN_AF_NONE == func) return;
   
@@ -98,6 +145,15 @@ INLINE_STM32 void pin_af(enum pin pin, pin_af_t func) {
   MODIFY_REG(io_port(pin)->AFR[bank],  (PIN_AF_MASK << (4 * offset_pin)),  (func << 4 * offset_pin));  // AF7 - UART
 }
 
+/**
+ * @brief Nastavení náležitostí pinu.
+ *
+ * @param pin Pin, který chceme nastavit.
+ * @param mode Jakým typem bude pin nastaven (input, output, analog, ...).
+ * @param pull Jaký pull chceme? (none, up, down),
+ * @param speed Rychlost, kterou chceme nastavit (low, mid, high, very high).
+ * @param type Styl připojení pinu k okolnímu světu (push-pull, open-drain).
+ */
 INLINE_STM32 void pin_setup(enum pin pin, pin_mode_t mode, pin_pull_t pull, pin_speed_t speed, pin_type_t type) {
   pin_enable(pin);
   pin_mode(pin, mode);
@@ -106,6 +162,16 @@ INLINE_STM32 void pin_setup(enum pin pin, pin_mode_t mode, pin_pull_t pull, pin_
   pin_output_type(pin, type);
 }
 
+/**
+ * @brief Nastavení náležitostí pinu + af.
+ *
+ * @param pin Pin, který chceme nastavit.
+ * @param mode Jakým typem bude pin nastaven (input, output, analog, ...).
+ * @param pull Jaký pull chceme? (none, up, down),
+ * @param speed Rychlost, kterou chceme nastavit (low, mid, high, very high).
+ * @param type Styl připojení pinu k okolnímu světu (push-pull, open-drain).
+ * @param func TODO: Dokumentace
+ */
 INLINE_STM32 void pin_setup_af(enum pin pin, pin_mode_t mode, pin_pull_t pull, pin_speed_t speed, pin_type_t type, pin_af_t func) {
   pin_setup(pin, mode, pull, speed, type);
   pin_af(pin, func);
