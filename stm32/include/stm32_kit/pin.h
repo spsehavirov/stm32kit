@@ -67,7 +67,41 @@ typedef enum {
   PIN_AF13    = 13UL, // 0b1101
   PIN_AF14    = 14UL, // 0b1110
   PIN_AF15    = 15UL, // 0b1111
-  PIN_AF_MASK = 15UL
+  PIN_AF_MASK = 15UL,
+  // Function aliases
+  PIN_AF_SYSTEM      = PIN_AF0,  ///< System (MCO, SWD, RTC_50Hz)
+  /* TIMERS */
+  PIN_AF_TIM1        = PIN_AF1,  ///< TIM1
+  PIN_AF_TIM2        = PIN_AF1,  ///< TIM2
+  PIN_AF_TIM3        = PIN_AF2,  ///< TIM3
+  PIN_AF_TIM4        = PIN_AF2,  ///< TIM4
+  PIN_AF_TIM5        = PIN_AF2,  ///< TIM5
+  PIN_AF_TIM8        = PIN_AF3,  ///< TIM8
+  PIN_AF_TIM9        = PIN_AF3,  ///< TIM9
+  PIN_AF_TIM10       = PIN_AF3,  ///< TIM10
+  PIN_AF_TIM11       = PIN_AF3,  ///< TIM11
+  PIN_AF_TIM12       = PIN_AF9,  ///< TIM12
+  PIN_AF_TIM13       = PIN_AF9,  ///< TIM13
+  PIN_AF_TIM14       = PIN_AF9,  ///< TIM14
+  /* Other */
+  PIN_AF_SPI1        = PIN_AF5,  ///< SPI1
+  PIN_AF_SPI2        = PIN_AF5,  ///< SPI2
+  PIN_AF_SPI3        = PIN_AF6,  ///< SPI3
+  PIN_AF_I2S1        = PIN_AF5,  ///< I2S1
+  PIN_AF_I2S2        = PIN_AF5,  ///< I2S2
+  PIN_AF_I2S3        = PIN_AF6,  ///< I2S3
+  PIN_AF_USART1      = PIN_AF7,  ///< USART1
+  PIN_AF_USART2      = PIN_AF7,  ///< USART2
+  PIN_AF_USART3      = PIN_AF7,  ///< USART3
+  PIN_AF_USART4      = PIN_AF8,  ///< USART4
+  PIN_AF_USART5      = PIN_AF8,  ///< USART5
+  PIN_AF_USART6      = PIN_AF8,  ///< USART6
+  PIN_AF_I2C         = PIN_AF4,  ///< All I2C peripherals (I2C1, I2C2, I2C3)
+  PIN_AF_CAN         = PIN_AF9,  ///< CAN1, CAN2
+  PIN_AF_ETHERNET    = PIN_AF11, ///< Ethernet
+  PIN_AF_SDIO        = PIN_AF12, ///< SDIO
+  PIN_AF_OTG         = PIN_AF10, ///< OTG_FS, OTG_HS
+  PIN_AF_LCD         = PIN_AF14, ///< LCD
 } pin_af_t;
 
 INLINE_STM32 void pin_mode(enum pin pin, pin_mode_t mode) {
