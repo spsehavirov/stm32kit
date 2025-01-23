@@ -63,6 +63,7 @@
 
 /* BTN setup */
 #   define USER_BUTTON  (PA0)  // Uzivatelske tlacitko pro: F401, F411, G071, L152
+#   define BTN_USR      (USER_BUTTON) // Srovnání názvosloví + zachování zpětné komp.
 
 /* LCD Screen setup */
 #   define LCD_RS       (PE3)
