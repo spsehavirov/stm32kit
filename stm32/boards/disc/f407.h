@@ -63,6 +63,7 @@
 
 /* BTN setup */
 #   define USER_BUTTON  (PA0)  // Uzivatelske tlacitko pro: F401, F411, G071, L152
+#   define BTN_USR      (USER_BUTTON) // Srovnání názvosloví + zachování zpětné komp.
 
 /* LCD Screen setup */
 #   define LCD_RS       (PE3)
@@ -89,5 +90,24 @@
 /* UART setup */
 #   define UART_TX      (PA2)
 #   define UART_RX      (PA3)
+
+/* IIC setup */
+/*
+    @attention: Needs to be defined fully to work
+                with current macros setup in i2c.h
+
+                user needs to select pin combo from
+                the documentation.
+ */
+#ifndef I2C_CUSTOM
+#   define I2C1_SDA (PB7)
+#   define I2C1_SCL (PB6)
+
+#   define I2C2_SDA (PB11)
+#   define I2C2_SCL (PB10)
+
+#   define I2C3_SDA (PC9)
+#   define I2C3_SCL (PA8)
+#endif
 
 #endif /* STM32_KIT_BOARDS_F407 */
