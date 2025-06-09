@@ -43,6 +43,10 @@
 #   define KEYPAD_R2  (NC)
 #   define KEYPAD_R3  (NC)
 
+/* I2C setup */
+#   define I2C1_SCL   (NC)
+#   define I2C1_SDA   (NC)
+
 /* ADC setup */
 #   define ADC_1      (PA1)
 

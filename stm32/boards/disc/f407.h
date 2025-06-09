@@ -83,6 +83,31 @@
 #   define KEYPAD_R2    (PD8)
 #   define KEYPAD_R3    (PD9)
 
+/* I2C setup
+ * Pin packs available on DISC F407 board
+ */
+#   define I2C1_SCL_PP0     (PB6)
+#   define I2C1_SDA_PP0     (PB7)
+#   define I2C1_SCL_PP1     (PB8)
+#   define I2C1_SDA_PP1     (PB9)
+#   define I2C2_SCL_PP0     (PB10)
+#   define I2C2_SDA_PP0     (PB11)
+#   define I2C2_SCL_PP1     (PF1)
+#   define I2C2_SDA_PP1     (PF0)
+#   define I2C2_SCL_PP2     (PH4)
+#   define I2C2_SDA_PP2     (PH5)
+#   define I2C3_SCL_PP0     (PA8)
+#   define I2C3_SDA_PP0     (PC9)
+#   define I2C3_SCL_PP1     (PH7)
+#   define I2C3_SDA_PP1     (PH8)
+
+#   define I2C1_SCL     I2C1_SCL_PP0
+#   define I2C1_SDA     I2C1_SDA_PP0
+#   define I2C2_SCL     I2C2_SCL_PP0
+#   define I2C2_SDA     I2C2_SDA_PP0
+#   define I2C3_SCL     I2C3_SCL_PP0
+#   define I2C3_SDA     I2C3_SDA_PP0
+
 /* ADC setup */
 #   define ADC_1        (PA1)
 

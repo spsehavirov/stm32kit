@@ -91,6 +91,10 @@
 #   define KEYPAD_R2   (PB4)
 #   define KEYPAD_R3   (PB5)
 
+/* I2C setup */
+#   define I2C1_SCL    (PB8)
+#   define I2C1_SDA    (PB9)
+
 /* ADC setup */
 #   define ADC_1       (PA1)
 
